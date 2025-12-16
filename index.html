@@ -445,19 +445,33 @@
                 return;
             }
             
-            container.innerHTML = `
-                <p class="text-center text-gray-600 mb-3">Choisis un joueur existant :</p>
-                <div class="grid grid-cols-2 gap-3 max-w-md mx-auto mb-4">
-                    ${players.map(player => `
-                        <div class="relative bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 hover:scale-105 transition-transform cursor-pointer border-2 border-purple-300" onclick="selectPlayer('${player.name}')">
-                            <button onclick="event.stopPropagation(); deletePlayer('${player.name}')" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition-all">×</button>
-                            <p class="font-bold text-lg text-purple-800 mb-1">${player.name}</p>
-                            <p class="text-sm text-gray-600">${player.gamesPlayed} partie${player.gamesPlayed > 1 ? 's' : ''}</p>
-                            <p class="text-sm font-semibold text-green-600">Moy: ${player.averageScore} pts</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            container.innerHTML = '<p class="text-center text-gray-600 mb-3">Choisis un joueur existant :</p><div class="grid grid-cols-1 gap-3 max-w-md mx-auto mb-4" id="playersGrid"></div>';
+            
+            const grid = document.getElementById('playersGrid');
+            players.forEach(player => {
+                const row = document.createElement('div');
+                row.className = 'flex gap-2';
+                
+                const card = document.createElement('div');
+                card.className = 'flex-grow bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 hover:scale-105 transition-transform cursor-pointer border-2 border-purple-300';
+                card.onclick = () => selectPlayer(player.name);
+                
+                card.innerHTML = `
+                    <p class="font-bold text-lg text-purple-800 mb-1">${player.name}</p>
+                    <p class="text-sm text-gray-600">${player.gamesPlayed} partie${player.gamesPlayed > 1 ? 's' : ''}</p>
+                    <p class="text-sm font-semibold text-green-600">Moy: ${player.averageScore} pts</p>
+                `;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 font-bold text-xl transition-all';
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.title = 'Supprimer ' + player.name;
+                deleteBtn.onclick = () => deletePlayer(player.name);
+                
+                row.appendChild(card);
+                row.appendChild(deleteBtn);
+                grid.appendChild(row);
+            });
         }
         
         function selectPlayer(name) {
@@ -468,6 +482,9 @@
         function deletePlayer(name) {
             if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
             
+            console.log('Avant suppression - Joueurs:', players);
+            console.log('Avant suppression - Scores:', scores);
+            
             // Supprimer le joueur
             players = players.filter(p => p.name !== name);
             localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
@@ -476,8 +493,14 @@
             scores = scores.filter(s => s.name !== name);
             localStorage.setItem('colorQuizScores', JSON.stringify(scores));
             
+            console.log('Après suppression - Joueurs:', players);
+            console.log('Après suppression - Scores:', scores);
+            
+            // Recharger l'affichage
             displayExistingPlayers();
             updateLeaderboard();
+            
+            alert(`${name} a été supprimé avec succès !`);
         }
         
         function startQuiz() {
