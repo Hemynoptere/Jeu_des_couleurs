@@ -3,50 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 Mélange de Couleurs Magique!</title>
+    <title>🎮 Quiz des Couleurs !</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: linear-gradient(to right, #d8b4fe, #f9a8d4);
-            border-radius: 0.5rem;
-            height: 0.75rem;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 1.5rem;
-            height: 1.5rem;
-            background: #a855f7;
-            cursor: pointer;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .correct-answer {
+            animation: bounce 0.5s ease-in-out;
         }
-        
-        input[type="range"]::-moz-range-thumb {
-            width: 1.5rem;
-            height: 1.5rem;
-            background: #a855f7;
-            cursor: pointer;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .wrong-shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        @keyframes blink {
+            0%, 100% { border-color: #22c55e; box-shadow: 0 0 20px #22c55e; }
+            50% { border-color: #fbbf24; box-shadow: 0 0 40px #fbbf24; }
+        }
+        .blink-answer {
+            animation: blink 0.6s ease-in-out 3;
+            border-width: 8px !important;
+        }
+        .grayed-out {
+            filter: grayscale(100%) brightness(0.7);
+            opacity: 0.5;
         }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 p-4">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-4xl font-bold text-center text-purple-800 mb-6">
-            🎨 Mélange de Couleurs Magique! 🎨
+    <!-- Écran d'accueil -->
+    <div id="homeScreen" class="max-w-4xl mx-auto">
+        <h1 class="text-5xl font-bold text-center text-purple-800 mb-8 mt-8">
+            🎮 Quiz des Couleurs ! 🎨
         </h1>
         
+        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-6">
+            <h2 class="text-3xl font-bold text-center text-gray-700 mb-6">
+                Choisis ton mode de jeu
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <!-- Mode Pratique -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-blue-300" onclick="selectMode('practice')">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🎨</div>
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">Mode Pratique</h3>
+                        <p class="text-gray-700">
+                            Mélange librement les couleurs et découvre les résultats. Parfait pour apprendre !
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Mode Quiz -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-purple-300" onclick="selectMode('quiz')">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🏆</div>
+                        <h3 class="text-2xl font-bold text-purple-800 mb-3">Mode Quiz</h3>
+                        <p class="text-gray-700">
+                            Devine le résultat du mélange ! Gagne des points et compare ton score avec tes amis.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des scores -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                🏅 Tableau des Meilleurs Scores
+            </h2>
+            <div id="leaderboard" class="space-y-3">
+                <p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Pratique -->
+    <div id="practiceScreen" class="max-w-6xl mx-auto hidden">
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="goHome()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-full transition-all">
+                ← Retour
+            </button>
+            <h1 class="text-4xl font-bold text-purple-800">🎨 Mode Pratique</h1>
+            <div class="w-32"></div>
+        </div>
+        
         <div class="bg-white rounded-3xl shadow-2xl p-6 mb-6">
-            <!-- Choix du nombre de couleurs -->
             <div class="mb-6 text-center">
-                <h3 class="text-lg font-bold text-gray-700 mb-3">Nombre de couleurs dans la grille :</h3>
+                <h3 class="text-lg font-bold text-gray-700 mb-3">Nombre de couleurs :</h3>
                 <div class="flex gap-4 justify-center flex-wrap">
                     <button id="btn64" class="px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105">
                         64 couleurs (8×8)
@@ -57,9 +106,7 @@
                 </div>
             </div>
 
-            <!-- Couleurs et résultat sur une ligne -->
             <div class="grid grid-cols-3 gap-6 mb-6">
-                <!-- Couleur 1 -->
                 <div>
                     <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 1</h2>
                     <div id="color1Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FF0000;"></div>
@@ -69,7 +116,6 @@
                     <p id="color1Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FF0000</p>
                 </div>
 
-                <!-- Résultat -->
                 <div>
                     <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Résultat</h2>
                     <div id="resultDisplay" class="w-full h-48 rounded-xl border-4 border-dashed border-gray-300 mb-3 flex items-center justify-center bg-gray-50">
@@ -81,7 +127,6 @@
                     <p id="resultCode" class="text-center text-sm text-gray-600 mt-2 font-mono"></p>
                 </div>
 
-                <!-- Couleur 2 -->
                 <div>
                     <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 2</h2>
                     <div id="color2Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FFFF00;"></div>
@@ -92,26 +137,16 @@
                 </div>
             </div>
 
-            <!-- Curseur de mélange -->
             <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                <h3 class="text-lg font-bold text-gray-700 mb-3 text-center">
-                    ⚖️ Proportion du mélange
-                </h3>
+                <h3 class="text-lg font-bold text-gray-700 mb-3 text-center">⚖️ Proportion du mélange</h3>
                 <div class="flex items-center gap-4">
                     <div class="flex-shrink-0 text-center">
                         <div id="ratioColor1" class="w-12 h-12 rounded-lg border-2 border-purple-400 mb-1" style="background-color: #FF0000;"></div>
                         <span id="ratioText1" class="text-sm font-bold text-purple-700">50%</span>
                     </div>
-                    
                     <div class="flex-grow">
-                        <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full cursor-pointer">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>Plus de Couleur 1</span>
-                            <span>Équilibré</span>
-                            <span>Plus de Couleur 2</span>
-                        </div>
+                        <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full h-3 bg-gradient-to-r from-purple-300 to-pink-300 rounded-lg appearance-none cursor-pointer">
                     </div>
-                    
                     <div class="flex-shrink-0 text-center">
                         <div id="ratioColor2" class="w-12 h-12 rounded-lg border-2 border-pink-400 mb-1" style="background-color: #FFFF00;"></div>
                         <span id="ratioText2" class="text-sm font-bold text-pink-700">50%</span>
@@ -119,33 +154,106 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="mt-8 bg-white rounded-xl p-6 shadow-lg">
-            <h3 class="text-lg font-bold text-gray-700 mb-2">💡 Comment jouer :</h3>
-            <p class="text-gray-600">
-                1. Choisis le nombre de couleurs (64 ou 256) - Le blanc et le noir sont toujours disponibles !<br>
-                2. Clique sur "Choisir" sous Couleur 1 pour voir la grille<br>
-                3. Sélectionne une couleur et la grille disparaîtra<br>
-                4. Fais la même chose pour Couleur 2<br>
-                5. Utilise le curseur pour ajuster la proportion de chaque couleur<br>
-                6. Clique sur "Mélanger" pour voir le résultat !
-            </p>
+    <!-- Mode Quiz -->
+    <div id="quizScreen" class="max-w-4xl mx-auto hidden">
+        <!-- Inscription -->
+        <div id="playerRegistration" class="bg-white rounded-3xl shadow-2xl p-8 mt-12">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                👤 Qui joue ?
+            </h2>
+            
+            <!-- Liste des joueurs existants -->
+            <div id="existingPlayers" class="mb-6"></div>
+            
+            <!-- Ou nouveau joueur -->
+            <div class="max-w-md mx-auto">
+                <p class="text-center text-gray-600 mb-3">Ou crée un nouveau joueur :</p>
+                <input type="text" id="playerName" placeholder="Entre ton prénom..." class="w-full px-6 py-4 text-xl border-4 border-purple-300 rounded-xl mb-4 focus:outline-none focus:border-purple-500">
+                <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-2xl font-bold py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                    Commencer ! 🚀
+                </button>
+                <button onclick="goHome()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
+                    ← Retour
+                </button>
+            </div>
+        </div>
+
+        <!-- Jeu Quiz -->
+        <div id="quizGame" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                    <p class="text-gray-600 text-sm">Joueur</p>
+                    <p id="currentPlayer" class="text-2xl font-bold text-purple-800"></p>
+                </div>
+                <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                    <p class="text-gray-600 text-sm">Score</p>
+                    <p id="currentScore" class="text-2xl font-bold text-green-600">0</p>
+                </div>
+                <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                    <p class="text-gray-600 text-sm">Question</p>
+                    <p id="questionNumber" class="text-2xl font-bold text-blue-600">1/10</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">
+                    Quel est le résultat de ce mélange ?
+                </h2>
+
+                <!-- Couleurs à mélanger -->
+                <div class="flex justify-center items-center gap-6 mb-8">
+                    <div class="text-center">
+                        <div id="quizColor1" class="w-32 h-32 rounded-2xl border-4 border-gray-300 shadow-lg mb-2"></div>
+                        <p class="text-sm text-gray-600">Couleur 1</p>
+                    </div>
+                    <div class="text-6xl text-purple-600">+</div>
+                    <div class="text-center">
+                        <div id="quizColor2" class="w-32 h-32 rounded-2xl border-4 border-gray-300 shadow-lg mb-2"></div>
+                        <p class="text-sm text-gray-600">Couleur 2</p>
+                    </div>
+                    <div class="text-6xl text-purple-600">=</div>
+                    <div class="text-6xl">❓</div>
+                </div>
+
+                <!-- Options de réponse -->
+                <div id="quizOptions" class="grid grid-cols-3 gap-4 mb-6">
+                    <!-- Options générées dynamiquement -->
+                </div>
+
+                <div id="feedback" class="hidden text-center text-2xl font-bold py-4 rounded-xl mb-4"></div>
+            </div>
+        </div>
+
+        <!-- Écran de fin -->
+        <div id="quizEnd" class="bg-white rounded-3xl shadow-2xl p-8 mt-12 hidden">
+            <h2 class="text-4xl font-bold text-center text-purple-800 mb-6">
+                🎉 Partie terminée !
+            </h2>
+            <div class="text-center mb-8">
+                <p class="text-2xl text-gray-700 mb-2">Score final de <span id="finalPlayer" class="font-bold text-purple-600"></span></p>
+                <p id="finalScore" class="text-6xl font-bold text-green-600 mb-4"></p>
+                <p id="finalPercentage" class="text-xl text-gray-600"></p>
+            </div>
+            <div class="flex gap-4 justify-center">
+                <button onclick="location.reload()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                    Rejouer 🔄
+                </button>
+                <button onclick="goHome()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 px-8 rounded-xl transition-all">
+                    Accueil 🏠
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Fenêtre modale pour la grille de couleurs -->
+    <!-- Modal grille couleurs -->
     <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
         <div class="bg-white rounded-3xl p-6 max-w-3xl max-h-[90vh] overflow-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-2xl font-bold text-gray-700">
-                    🎯 Choisis une couleur
-                </h3>
-                <button id="btnCloseModal" class="text-3xl text-gray-500 hover:text-gray-700 font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
-                    ×
-                </button>
+                <h3 id="modalTitle" class="text-2xl font-bold text-gray-700">🎯 Choisis une couleur</h3>
+                <button id="btnCloseModal" class="text-3xl text-gray-500 hover:text-gray-700 font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">×</button>
             </div>
-            
-            <!-- Blanc et Noir en grands boutons -->
             <div class="flex gap-4 justify-center mb-6">
                 <button class="color-white w-32 h-32 rounded-xl border-4 border-gray-300 hover:scale-110 transition-transform shadow-lg hover:shadow-xl" style="background-color: #FFFFFF;" title="Blanc">
                     <span class="text-2xl font-bold text-gray-400">Blanc</span>
@@ -154,18 +262,18 @@
                     <span class="text-2xl font-bold text-white">Noir</span>
                 </button>
             </div>
-            
             <div class="border-t-2 border-gray-200 pt-4">
                 <div class="flex justify-center">
                     <div id="colorGrid" class="grid gap-2"></div>
                 </div>
             </div>
-            
             <p id="colorCount" class="text-center text-sm text-gray-500 mt-4"></p>
         </div>
     </div>
 
     <script>
+        // Variables globales
+        let currentMode = 'home';
         let color1 = '#FF0000';
         let color2 = '#FFFF00';
         let result = null;
@@ -173,7 +281,17 @@
         let activeSelector = null;
         let mixRatio = 50;
         let colorGrid = [];
+        
+        // Variables Quiz
+        let playerName = '';
+        let score = 0;
+        let currentQuestion = 1;
+        let totalQuestions = 10;
+        let correctAnswer = '';
+        let scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
+        let players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
 
+        // Fonctions de génération de couleurs
         function generateColorGrid(size) {
             const colors = ['#FFFFFF', '#000000'];
             const steps = Math.sqrt(size - 2);
@@ -228,11 +346,7 @@
         }
 
         function rgbToCmy(r, g, b) {
-            return {
-                c: 1 - r / 255,
-                m: 1 - g / 255,
-                y: 1 - b / 255
-            };
+            return { c: 1 - r / 255, m: 1 - g / 255, y: 1 - b / 255 };
         }
 
         function cmyToRgb(c, m, y) {
@@ -250,25 +364,44 @@
             }).join('');
         }
 
-        function mixColors() {
-            const rgb1 = hexToRgb(color1);
-            const rgb2 = hexToRgb(color2);
-            
+        function mixTwoColors(c1, c2, ratio = 50) {
+            const rgb1 = hexToRgb(c1);
+            const rgb2 = hexToRgb(c2);
             const cmy1 = rgbToCmy(rgb1.r, rgb1.g, rgb1.b);
             const cmy2 = rgbToCmy(rgb2.r, rgb2.g, rgb2.b);
-            
-            const weight1 = mixRatio / 100;
+            const weight1 = ratio / 100;
             const weight2 = 1 - weight1;
-            
             const mixedCmy = {
                 c: cmy1.c * weight2 + cmy2.c * weight1,
                 m: cmy1.m * weight2 + cmy2.m * weight1,
                 y: cmy1.y * weight2 + cmy2.y * weight1
             };
-            
             const mixedRgb = cmyToRgb(mixedCmy.c, mixedCmy.m, mixedCmy.y);
-            result = rgbToHex(mixedRgb.r, mixedRgb.g, mixedRgb.b);
-            
+            return rgbToHex(mixedRgb.r, mixedRgb.g, mixedRgb.b);
+        }
+
+        // Navigation
+        function selectMode(mode) {
+            currentMode = mode;
+            document.getElementById('homeScreen').classList.add('hidden');
+            if (mode === 'practice') {
+                document.getElementById('practiceScreen').classList.remove('hidden');
+            } else if (mode === 'quiz') {
+                document.getElementById('quizScreen').classList.remove('hidden');
+                displayExistingPlayers();
+            }
+        }
+
+        function goHome() {
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('practiceScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            updateLeaderboard();
+        }
+
+        // Mode Pratique
+        function mixColors() {
+            result = mixTwoColors(color1, color2, mixRatio);
             document.getElementById('resultDisplay').style.backgroundColor = result;
             document.getElementById('resultDisplay').classList.remove('border-dashed');
             document.getElementById('resultDisplay').classList.add('border-purple-300', 'animate-pulse');
@@ -281,19 +414,267 @@
             document.getElementById('ratioText2').textContent = mixRatio + '%';
         }
 
+        // Mode Quiz
+        function displayExistingPlayers() {
+            const container = document.getElementById('existingPlayers');
+            if (players.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = `
+                <p class="text-center text-gray-600 mb-3">Choisis un joueur existant :</p>
+                <div class="grid grid-cols-2 gap-3 max-w-md mx-auto mb-4">
+                    ${players.map(player => `
+                        <div class="relative bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 hover:scale-105 transition-transform cursor-pointer border-2 border-purple-300" onclick="selectPlayer('${player.name}')">
+                            <button onclick="event.stopPropagation(); deletePlayer('${player.name}')" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 transition-all">×</button>
+                            <p class="font-bold text-lg text-purple-800 mb-1">${player.name}</p>
+                            <p class="text-sm text-gray-600">${player.gamesPlayed} partie${player.gamesPlayed > 1 ? 's' : ''}</p>
+                            <p class="text-sm font-semibold text-green-600">Moy: ${player.averageScore} pts</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function selectPlayer(name) {
+            document.getElementById('playerName').value = name;
+            startQuiz();
+        }
+        
+        function deletePlayer(name) {
+            if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
+            
+            // Supprimer le joueur
+            players = players.filter(p => p.name !== name);
+            localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
+            
+            // Supprimer ses scores
+            scores = scores.filter(s => s.name !== name);
+            localStorage.setItem('colorQuizScores', JSON.stringify(scores));
+            
+            displayExistingPlayers();
+            updateLeaderboard();
+        }
+        
+        function startQuiz() {
+            playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('Entre ton prénom pour jouer !');
+                return;
+            }
+            score = 0;
+            currentQuestion = 1;
+            document.getElementById('playerRegistration').classList.add('hidden');
+            document.getElementById('quizGame').classList.remove('hidden');
+            document.getElementById('currentPlayer').textContent = playerName;
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('currentScore').textContent = score;
+            document.getElementById('questionNumber').textContent = `${currentQuestion}/${totalQuestions}`;
+            
+            // Générer deux couleurs aléatoires
+            const allColors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#FFC0CB', '#000000', '#FFFFFF'];
+            const c1 = allColors[Math.floor(Math.random() * allColors.length)];
+            let c2 = allColors[Math.floor(Math.random() * allColors.length)];
+            while (c2 === c1) c2 = allColors[Math.floor(Math.random() * allColors.length)];
+            
+            correctAnswer = mixTwoColors(c1, c2, 50);
+            
+            document.getElementById('quizColor1').style.backgroundColor = c1;
+            document.getElementById('quizColor2').style.backgroundColor = c2;
+            
+            // Générer 6 options (dont la bonne)
+            const options = [correctAnswer];
+            while (options.length < 6) {
+                const randomColor = allColors[Math.floor(Math.random() * allColors.length)];
+                const wrongAnswer = mixTwoColors(randomColor, allColors[Math.floor(Math.random() * allColors.length)], Math.random() * 100);
+                if (!options.includes(wrongAnswer)) options.push(wrongAnswer);
+            }
+            
+            // Mélanger les options
+            options.sort(() => Math.random() - 0.5);
+            
+            // Afficher les options
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'h-32 rounded-2xl border-4 border-gray-300 hover:scale-105 transition-transform shadow-lg cursor-pointer';
+                btn.style.backgroundColor = option;
+                btn.onclick = () => checkAnswer(option, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, btn) {
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.getElementById('quizOptions').querySelectorAll('button');
+            allButtons.forEach(b => b.onclick = null);
+            
+            if (selected === correctAnswer) {
+                score += 10;
+                feedback.textContent = '✅ Bravo ! +10 points';
+                feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-green-100 text-green-700';
+                btn.classList.add('correct-answer', 'border-green-500');
+                btn.style.borderWidth = '8px';
+                
+                setTimeout(() => {
+                    currentQuestion++;
+                    if (currentQuestion <= totalQuestions) {
+                        generateQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }, 2000);
+            } else {
+                feedback.textContent = '❌ Raté ! Regarde la bonne réponse qui clignote :';
+                feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-red-100 text-red-700';
+                btn.classList.add('wrong-shake', 'border-red-500');
+                btn.style.borderWidth = '8px';
+                
+                // Griser les mauvaises réponses et faire clignoter la bonne
+                let correctButton = null;
+                allButtons.forEach(b => {
+                    const btnColor = b.style.backgroundColor;
+                    // Convertir les deux couleurs en format comparable
+                    const btnRgb = btnColor.startsWith('#') ? btnColor : rgbStringToHex(btnColor);
+                    
+                    if (btnRgb.toUpperCase() === correctAnswer.toUpperCase()) {
+                        correctButton = b;
+                        b.classList.add('blink-answer');
+                        b.style.borderColor = '#22c55e';
+                        b.style.borderWidth = '8px';
+                    } else {
+                        b.classList.add('grayed-out');
+                    }
+                });
+                
+                setTimeout(() => {
+                    currentQuestion++;
+                    if (currentQuestion <= totalQuestions) {
+                        generateQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }, 3500);
+            }
+            feedback.classList.remove('hidden');
+        }
+        
+        function rgbStringToHex(rgb) {
+            const result = rgb.match(/\d+/g);
+            if (!result) return rgb;
+            return rgbToHex(parseInt(result[0]), parseInt(result[1]), parseInt(result[2]));
+        }
+
+        function endQuiz() {
+            document.getElementById('quizGame').classList.add('hidden');
+            document.getElementById('quizEnd').classList.remove('hidden');
+            document.getElementById('finalPlayer').textContent = playerName;
+            document.getElementById('finalScore').textContent = score + ' points';
+            document.getElementById('finalPercentage').textContent = `${Math.round(score / totalQuestions)}% de réussite`;
+            
+            // Sauvegarder le score
+            scores.push({ name: playerName, score: score, date: new Date().toLocaleDateString() });
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 50); // Garder les 50 meilleurs
+            localStorage.setItem('colorQuizScores', JSON.stringify(scores));
+            
+            // Mettre à jour ou créer le joueur
+            let player = players.find(p => p.name === playerName);
+            if (player) {
+                player.gamesPlayed++;
+                player.totalScore += score;
+                player.averageScore = Math.round(player.totalScore / player.gamesPlayed);
+            } else {
+                players.push({
+                    name: playerName,
+                    gamesPlayed: 1,
+                    totalScore: score,
+                    averageScore: score
+                });
+            }
+            localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
+            
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            if (scores.length === 0) {
+                leaderboard.innerHTML = '<p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>';
+                return;
+            }
+            
+            // Calculer les meilleures moyennes par joueur
+            const playerStats = {};
+            scores.forEach(s => {
+                if (!playerStats[s.name]) {
+                    playerStats[s.name] = { scores: [], bestScore: 0 };
+                }
+                playerStats[s.name].scores.push(s.score);
+                if (s.score > playerStats[s.name].bestScore) {
+                    playerStats[s.name].bestScore = s.score;
+                }
+            });
+            
+            const playerAverages = Object.keys(playerStats).map(name => {
+                const avg = Math.round(playerStats[name].scores.reduce((a, b) => a + b, 0) / playerStats[name].scores.length);
+                return {
+                    name: name,
+                    average: avg,
+                    bestScore: playerStats[name].bestScore,
+                    gamesPlayed: playerStats[name].scores.length
+                };
+            }).sort((a, b) => b.average - a.average);
+            
+            leaderboard.innerHTML = `
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🏆 Classement par Moyenne</h3>
+                    ${playerAverages.slice(0, 10).map((p, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r ${i === 0 ? 'from-yellow-100 to-yellow-200' : i === 1 ? 'from-gray-100 to-gray-200' : i === 2 ? 'from-orange-100 to-orange-200' : 'from-purple-50 to-pink-50'} p-4 rounded-xl mb-2">
+                            <div class="flex items-center gap-4">
+                                <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-600' : i === 1 ? 'text-gray-600' : i === 2 ? 'text-orange-600' : 'text-purple-600'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                                <div>
+                                    <p class="font-bold text-lg">${p.name}</p>
+                                    <p class="text-sm text-gray-600">${p.gamesPlayed} partie${p.gamesPlayed > 1 ? 's' : ''} • Meilleur: ${p.bestScore} pts</p>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-green-600">${p.average} pts</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="border-t-2 border-purple-200 pt-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">⭐ Top 10 des Meilleurs Scores</h3>
+                    ${scores.slice(0, 10).map((s, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl font-bold text-blue-600">#${i + 1}</span>
+                                <div>
+                                    <p class="font-bold">${s.name}</p>
+                                    <p class="text-xs text-gray-600">${s.date}</p>
+                                </div>
+                            </div>
+                            <span class="text-xl font-bold text-green-600">${s.score} pts</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Modal
         function showModal(selector) {
             activeSelector = selector;
             document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modalTitle').textContent = 
-                `🎯 Choisis une couleur pour ${selector === 1 ? 'Couleur 1' : 'Couleur 2'}`;
-            
             const gridDiv = document.getElementById('colorGrid');
             const gridCols = Math.sqrt(gridSize);
             const cellSize = gridSize === 64 ? '45px' : '30px';
-            
             gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
             gridDiv.innerHTML = '';
-            
             colorGrid.slice(2).forEach(color => {
                 const cell = document.createElement('div');
                 cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
@@ -304,9 +685,7 @@
                 cell.onclick = () => selectColor(color);
                 gridDiv.appendChild(cell);
             });
-            
-            document.getElementById('colorCount').textContent = 
-                `${colorGrid.length} couleurs disponibles - Clique sur une couleur pour la sélectionner`;
+            document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
         }
 
         function closeModal() {
@@ -331,8 +710,9 @@
 
         // Initialisation
         colorGrid = generateColorGrid(gridSize);
+        updateLeaderboard();
 
-        // Event listeners
+        // Event listeners Mode Pratique
         document.getElementById('btn64').onclick = () => {
             gridSize = 64;
             colorGrid = generateColorGrid(gridSize);
@@ -365,6 +745,11 @@
             mixRatio = parseInt(e.target.value);
             updateRatioDisplay();
             if (result) mixColors();
+        };
+
+        // Enter pour démarrer le quiz
+        document.getElementById('playerName').onkeypress = (e) => {
+            if (e.key === 'Enter') startQuiz();
         };
     </script>
 </body>
