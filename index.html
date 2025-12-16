@@ -482,9 +482,6 @@
         function deletePlayer(name) {
             if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
             
-            console.log('Avant suppression - Joueurs:', players);
-            console.log('Avant suppression - Scores:', scores);
-            
             // Supprimer le joueur
             players = players.filter(p => p.name !== name);
             localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
@@ -493,14 +490,13 @@
             scores = scores.filter(s => s.name !== name);
             localStorage.setItem('colorQuizScores', JSON.stringify(scores));
             
-            console.log('Après suppression - Joueurs:', players);
-            console.log('Après suppression - Scores:', scores);
+            // Recharger les données depuis localStorage pour être sûr
+            players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
+            scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
             
             // Recharger l'affichage
             displayExistingPlayers();
             updateLeaderboard();
-            
-            alert(`${name} a été supprimé avec succès !`);
         }
         
         function startQuiz() {
