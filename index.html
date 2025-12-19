@@ -48,7 +48,6 @@
             </h2>
             
             <div class="grid md:grid-cols-2 gap-6 mb-8">
-                <!-- Mode Pratique -->
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-blue-300" onclick="selectMode('practice')">
                     <div class="text-center">
                         <div class="text-6xl mb-4">🎨</div>
@@ -59,20 +58,18 @@
                     </div>
                 </div>
                 
-                <!-- Mode Quiz -->
                 <div class="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-purple-300" onclick="selectMode('quiz')">
                     <div class="text-center">
                         <div class="text-6xl mb-4">🏆</div>
                         <h3 class="text-2xl font-bold text-purple-800 mb-3">Mode Quiz</h3>
                         <p class="text-gray-700">
-                            Devine le résultat du mélange ! Gagne des points et compare ton score avec tes amis.
+                            Devine le résultat du mélange ! Plusieurs niveaux de difficulté.
                         </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tableau des scores -->
         <div class="bg-white rounded-3xl shadow-2xl p-8">
             <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
                 🏅 Tableau des Meilleurs Scores
@@ -109,11 +106,12 @@
             <div class="grid grid-cols-3 gap-6 mb-6">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 1</h2>
-                    <div id="color1Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FF0000;"></div>
+                    <div id="color1Display" class="w-full rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FF0000; height: 200px;"></div>
                     <button id="btnColor1" class="w-full py-3 rounded-lg font-semibold transition-all bg-purple-100 text-purple-700 hover:bg-purple-200">
                         Choisir
                     </button>
                     <p id="color1Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FF0000</p>
+                    <p id="ratioText1" class="text-center text-2xl font-bold text-purple-700 mt-2">50%</p>
                 </div>
 
                 <div>
@@ -129,28 +127,23 @@
 
                 <div>
                     <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 2</h2>
-                    <div id="color2Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FFFF00;"></div>
+                    <div id="color2Display" class="w-full rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FFFF00; height: 200px;"></div>
                     <button id="btnColor2" class="w-full py-3 rounded-lg font-semibold transition-all bg-pink-100 text-pink-700 hover:bg-pink-200">
                         Choisir
                     </button>
                     <p id="color2Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FFFF00</p>
+                    <p id="ratioText2" class="text-center text-2xl font-bold text-pink-700 mt-2">50%</p>
                 </div>
             </div>
 
+            <!-- Curseur de proportion -->
             <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                <h3 class="text-lg font-bold text-gray-700 mb-3 text-center">⚖️ Proportion du mélange</h3>
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 text-center">
-                        <div id="ratioColor1" class="w-12 h-12 rounded-lg border-2 border-purple-400 mb-1" style="background-color: #FF0000;"></div>
-                        <span id="ratioText1" class="text-sm font-bold text-purple-700">50%</span>
-                    </div>
-                    <div class="flex-grow">
-                        <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full h-3 bg-gradient-to-r from-purple-300 to-pink-300 rounded-lg appearance-none cursor-pointer">
-                    </div>
-                    <div class="flex-shrink-0 text-center">
-                        <div id="ratioColor2" class="w-12 h-12 rounded-lg border-2 border-pink-400 mb-1" style="background-color: #FFFF00;"></div>
-                        <span id="ratioText2" class="text-sm font-bold text-pink-700">50%</span>
-                    </div>
+                <h3 class="text-lg font-bold text-gray-700 mb-4 text-center">⚖️ Proportion du mélange</h3>
+                <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full h-3 bg-gradient-to-r from-purple-300 to-pink-300 rounded-lg appearance-none cursor-pointer mb-2">
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>← Plus de Couleur 1</span>
+                    <span>Équilibré 50/50</span>
+                    <span>Plus de Couleur 2 →</span>
                 </div>
             </div>
         </div>
@@ -158,24 +151,72 @@
 
     <!-- Mode Quiz -->
     <div id="quizScreen" class="max-w-4xl mx-auto hidden">
+        <!-- Sélection du niveau -->
+        <div id="levelSelection" class="bg-white rounded-3xl shadow-2xl p-8 mt-12">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                🎯 Choisis ton niveau
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-green-300" onclick="selectLevel(1)">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">⭐</div>
+                        <h3 class="text-2xl font-bold text-green-800 mb-3">Niveau 1 - Débutant</h3>
+                        <p class="text-gray-700 mb-3">
+                            Couleurs primaires + Noir et Blanc
+                        </p>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF0000;" title="Rouge"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FFFF00;" title="Jaune"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #0000FF;" title="Bleu"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #000000;" title="Noir"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #FFFFFF;" title="Blanc"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3">3 choix de réponse</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-orange-300" onclick="selectLevel(2)">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">⭐⭐</div>
+                        <h3 class="text-2xl font-bold text-orange-800 mb-3">Niveau 2 - Intermédiaire</h3>
+                        <p class="text-gray-700 mb-3">
+                            Primaires + Secondaires + N&B
+                        </p>
+                        <div class="flex justify-center gap-2 flex-wrap">
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FFFF00;" title="Jaune"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF8000;" title="Orange"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF0000;" title="Rouge"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #8000FF;" title="Violet"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #0000FF;" title="Bleu"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #00FF00;" title="Vert"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #000000;" title="Noir"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #FFFFFF;" title="Blanc"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3">6 choix de réponse</p>
+                    </div>
+                </div>
+            </div>
+            <button onclick="goHome()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
+                ← Retour
+            </button>
+        </div>
+
         <!-- Inscription -->
-        <div id="playerRegistration" class="bg-white rounded-3xl shadow-2xl p-8 mt-12">
+        <div id="playerRegistration" class="bg-white rounded-3xl shadow-2xl p-8 mt-12 hidden">
             <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
                 👤 Qui joue ?
             </h2>
             
-            <!-- Liste des joueurs existants -->
             <div id="existingPlayers" class="mb-6"></div>
             
-            <!-- Ou nouveau joueur -->
             <div class="max-w-md mx-auto">
                 <p class="text-center text-gray-600 mb-3">Ou crée un nouveau joueur :</p>
                 <input type="text" id="playerName" placeholder="Entre ton prénom..." class="w-full px-6 py-4 text-xl border-4 border-purple-300 rounded-xl mb-4 focus:outline-none focus:border-purple-500">
                 <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-2xl font-bold py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
                     Commencer ! 🚀
                 </button>
-                <button onclick="goHome()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
-                    ← Retour
+                <button onclick="backToLevelSelection()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
+                    ← Changer de niveau
                 </button>
             </div>
         </div>
@@ -190,6 +231,10 @@
                     <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
                         <p class="text-gray-600 text-sm">Joueur</p>
                         <p id="currentPlayer" class="text-2xl font-bold text-purple-800"></p>
+                    </div>
+                    <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                        <p class="text-gray-600 text-sm">Niveau</p>
+                        <p id="currentLevel" class="text-2xl font-bold text-orange-600">1</p>
                     </div>
                     <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
                         <p class="text-gray-600 text-sm">Score</p>
@@ -208,7 +253,6 @@
                     Quel est le résultat de ce mélange ?
                 </h2>
 
-                <!-- Couleurs à mélanger -->
                 <div class="flex justify-center items-center gap-6 mb-8">
                     <div class="text-center">
                         <div id="quizColor1" class="w-32 h-32 rounded-2xl border-4 border-gray-300 shadow-lg mb-2"></div>
@@ -223,11 +267,7 @@
                     <div class="text-6xl">❓</div>
                 </div>
 
-                <!-- Options de réponse -->
-                <div id="quizOptions" class="grid grid-cols-3 gap-4 mb-6">
-                    <!-- Options générées dynamiquement -->
-                </div>
-
+                <div id="quizOptions" class="grid gap-4 mb-6"></div>
                 <div id="feedback" class="hidden text-center text-2xl font-bold py-4 rounded-xl mb-4"></div>
             </div>
         </div>
@@ -239,12 +279,13 @@
             </h2>
             <div class="text-center mb-8">
                 <p class="text-2xl text-gray-700 mb-2">Score final de <span id="finalPlayer" class="font-bold text-purple-600"></span></p>
+                <p class="text-lg text-gray-600 mb-4">Niveau <span id="finalLevel"></span></p>
                 <p id="finalScore" class="text-6xl font-bold text-green-600 mb-4"></p>
                 <p id="finalPercentage" class="text-xl text-gray-600"></p>
             </div>
-            <div class="flex gap-4 justify-center">
-                <button onclick="location.reload()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                    Rejouer 🔄
+            <div class="flex gap-4 justify-center flex-wrap">
+                <button onclick="restartSameLevel()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                    Rejouer ce niveau 🔄
                 </button>
                 <button onclick="backToPlayerSelection()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl transition-all">
                     Changer de joueur 👤
@@ -297,8 +338,76 @@
         let currentQuestion = 1;
         let totalQuestions = 10;
         let correctAnswer = '';
+        let quizLevel = 1;
         let scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
         let players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
+
+        // Couleurs du cercle chromatique
+        const CHROMATIC_COLORS = {
+            level1: {
+                name: 'Primaires + N&B',
+                colors: [
+                    { hex: '#FF0000', name: 'Rouge' },
+                    { hex: '#FFFF00', name: 'Jaune' },
+                    { hex: '#0000FF', name: 'Bleu' },
+                    { hex: '#000000', name: 'Noir' },
+                    { hex: '#FFFFFF', name: 'Blanc' }
+                ],
+                numChoices: 3,
+                // Table des mélanges corrects
+                mixTable: [
+                    { c1: '#FF0000', c2: '#FFFF00', result: '#FF8000' }, // Rouge + Jaune = Orange
+                    { c1: '#FFFF00', c2: '#0000FF', result: '#00FF00' }, // Jaune + Bleu = Vert
+                    { c1: '#0000FF', c2: '#FF0000', result: '#8000FF' }, // Bleu + Rouge = Violet
+                    { c1: '#FF0000', c2: '#000000', result: '#800000' }, // Rouge + Noir = Rouge foncé
+                    { c1: '#FFFF00', c2: '#000000', result: '#808000' }, // Jaune + Noir = Vert olive
+                    { c1: '#0000FF', c2: '#000000', result: '#000080' }, // Bleu + Noir = Bleu marine
+                    { c1: '#FF0000', c2: '#FFFFFF', result: '#FF8080' }, // Rouge + Blanc = Rose
+                    { c1: '#FFFF00', c2: '#FFFFFF', result: '#FFFF80' }, // Jaune + Blanc = Jaune clair
+                    { c1: '#0000FF', c2: '#FFFFFF', result: '#8080FF' }, // Bleu + Blanc = Bleu clair
+                    { c1: '#000000', c2: '#FFFFFF', result: '#808080' }  // Noir + Blanc = Gris
+                ]
+            },
+            level2: {
+                name: 'Primaires + Secondaires + N&B',
+                colors: [
+                    { hex: '#FFFF00', name: 'Jaune' },
+                    { hex: '#FF8000', name: 'Orange' },
+                    { hex: '#FF0000', name: 'Rouge' },
+                    { hex: '#8000FF', name: 'Violet' },
+                    { hex: '#0000FF', name: 'Bleu' },
+                    { hex: '#00FF00', name: 'Vert' },
+                    { hex: '#000000', name: 'Noir' },
+                    { hex: '#FFFFFF', name: 'Blanc' }
+                ],
+                numChoices: 6,
+                mixTable: [
+                    // Primaires
+                    { c1: '#FF0000', c2: '#FFFF00', result: '#FF8000' }, // Rouge + Jaune = Orange
+                    { c1: '#FFFF00', c2: '#0000FF', result: '#00FF00' }, // Jaune + Bleu = Vert
+                    { c1: '#0000FF', c2: '#FF0000', result: '#8000FF' }, // Bleu + Rouge = Violet
+                    // Secondaires entre elles
+                    { c1: '#FF8000', c2: '#00FF00', result: '#80C000' }, // Orange + Vert = Jaune-vert
+                    { c1: '#00FF00', c2: '#8000FF', result: '#4080FF' }, // Vert + Violet = Bleu-vert
+                    { c1: '#8000FF', c2: '#FF8000', result: '#C04000' }, // Violet + Orange = Rouge-orangé
+                    // Avec noir
+                    { c1: '#FF0000', c2: '#000000', result: '#800000' }, // Rouge + Noir
+                    { c1: '#FFFF00', c2: '#000000', result: '#808000' }, // Jaune + Noir
+                    { c1: '#0000FF', c2: '#000000', result: '#000080' }, // Bleu + Noir
+                    { c1: '#FF8000', c2: '#000000', result: '#804000' }, // Orange + Noir
+                    { c1: '#00FF00', c2: '#000000', result: '#008000' }, // Vert + Noir
+                    { c1: '#8000FF', c2: '#000000', result: '#400080' }, // Violet + Noir
+                    // Avec blanc
+                    { c1: '#FF0000', c2: '#FFFFFF', result: '#FF8080' }, // Rouge + Blanc
+                    { c1: '#FFFF00', c2: '#FFFFFF', result: '#FFFF80' }, // Jaune + Blanc
+                    { c1: '#0000FF', c2: '#FFFFFF', result: '#8080FF' }, // Bleu + Blanc
+                    { c1: '#FF8000', c2: '#FFFFFF', result: '#FFC080' }, // Orange + Blanc
+                    { c1: '#00FF00', c2: '#FFFFFF', result: '#80FF80' }, // Vert + Blanc
+                    { c1: '#8000FF', c2: '#FFFFFF', result: '#C080FF' }, // Violet + Blanc
+                    { c1: '#000000', c2: '#FFFFFF', result: '#808080' }  // Noir + Blanc = Gris
+                ]
+            }
+        };
 
         // Fonctions de génération de couleurs
         function generateColorGrid(size) {
@@ -397,15 +506,28 @@
                 document.getElementById('practiceScreen').classList.remove('hidden');
             } else if (mode === 'quiz') {
                 document.getElementById('quizScreen').classList.remove('hidden');
-                displayExistingPlayers();
+                document.getElementById('levelSelection').classList.remove('hidden');
             }
+        }
+
+        function selectLevel(level) {
+            quizLevel = level;
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('playerRegistration').classList.remove('hidden');
+            displayExistingPlayers();
+        }
+
+        function backToLevelSelection() {
+            document.getElementById('playerRegistration').classList.add('hidden');
+            document.getElementById('levelSelection').classList.remove('hidden');
         }
 
         function goHome() {
             document.getElementById('homeScreen').classList.remove('hidden');
             document.getElementById('practiceScreen').classList.add('hidden');
             document.getElementById('quizScreen').classList.add('hidden');
-            document.getElementById('playerRegistration').classList.remove('hidden');
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('playerRegistration').classList.add('hidden');
             document.getElementById('quizGame').classList.add('hidden');
             document.getElementById('quizEnd').classList.add('hidden');
             updateLeaderboard();
@@ -422,6 +544,14 @@
             displayExistingPlayers();
         }
 
+        function restartSameLevel() {
+            score = 0;
+            currentQuestion = 1;
+            document.getElementById('quizEnd').classList.add('hidden');
+            document.getElementById('quizGame').classList.remove('hidden');
+            generateQuestion();
+        }
+
         // Mode Pratique
         function mixColors() {
             result = mixTwoColors(color1, color2, mixRatio);
@@ -433,11 +563,23 @@
         }
 
         function updateRatioDisplay() {
-            document.getElementById('ratioText1').textContent = (100 - mixRatio) + '%';
-            document.getElementById('ratioText2').textContent = mixRatio + '%';
+            const ratio1 = 100 - mixRatio;
+            const ratio2 = mixRatio;
+            
+            document.getElementById('ratioText1').textContent = ratio1 + '%';
+            document.getElementById('ratioText2').textContent = ratio2 + '%';
+            
+            // Ajuster la hauteur des carrés de couleur proportionnellement
+            const minHeight = 100;
+            const maxHeight = 300;
+            const height1 = minHeight + ((ratio1 / 100) * (maxHeight - minHeight));
+            const height2 = minHeight + ((ratio2 / 100) * (maxHeight - minHeight));
+            
+            document.getElementById('color1Display').style.height = height1 + 'px';
+            document.getElementById('color2Display').style.height = height2 + 'px';
         }
 
-        // Mode Quiz
+        // Mode Quiz - Gestion des joueurs
         function displayExistingPlayers() {
             const container = document.getElementById('existingPlayers');
             if (players.length === 0) {
@@ -482,19 +624,15 @@
         function deletePlayer(name) {
             if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
             
-            // Supprimer le joueur
             players = players.filter(p => p.name !== name);
             localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
             
-            // Supprimer ses scores
             scores = scores.filter(s => s.name !== name);
             localStorage.setItem('colorQuizScores', JSON.stringify(scores));
             
-            // Recharger les données depuis localStorage pour être sûr
             players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
             scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
             
-            // Recharger l'affichage
             displayExistingPlayers();
             updateLeaderboard();
         }
@@ -510,6 +648,7 @@
             document.getElementById('playerRegistration').classList.add('hidden');
             document.getElementById('quizGame').classList.remove('hidden');
             document.getElementById('currentPlayer').textContent = playerName;
+            document.getElementById('currentLevel').textContent = quizLevel;
             generateQuestion();
         }
 
@@ -518,30 +657,46 @@
             document.getElementById('currentScore').textContent = score;
             document.getElementById('questionNumber').textContent = `${currentQuestion}/${totalQuestions}`;
             
-            // Générer deux couleurs aléatoires
-            const allColors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#FFC0CB', '#000000', '#FFFFFF'];
-            const c1 = allColors[Math.floor(Math.random() * allColors.length)];
-            let c2 = allColors[Math.floor(Math.random() * allColors.length)];
-            while (c2 === c1) c2 = allColors[Math.floor(Math.random() * allColors.length)];
+            const levelData = CHROMATIC_COLORS[`level${quizLevel}`];
+            const numChoices = levelData.numChoices;
             
-            correctAnswer = mixTwoColors(c1, c2, 50);
+            // Choisir un mélange aléatoire depuis la table
+            const mixTable = levelData.mixTable;
+            const selectedMix = mixTable[Math.floor(Math.random() * mixTable.length)];
+            
+            const c1 = selectedMix.c1;
+            const c2 = selectedMix.c2;
+            correctAnswer = selectedMix.result;
             
             document.getElementById('quizColor1').style.backgroundColor = c1;
             document.getElementById('quizColor2').style.backgroundColor = c2;
             
-            // Générer 6 options (dont la bonne)
+            // Générer les mauvaises options depuis d'autres mélanges
             const options = [correctAnswer];
-            while (options.length < 6) {
-                const randomColor = allColors[Math.floor(Math.random() * allColors.length)];
-                const wrongAnswer = mixTwoColors(randomColor, allColors[Math.floor(Math.random() * allColors.length)], Math.random() * 100);
-                if (!options.includes(wrongAnswer)) options.push(wrongAnswer);
+            const allPossibleResults = mixTable.map(m => m.result).filter(r => r !== correctAnswer);
+            
+            while (options.length < numChoices && allPossibleResults.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allPossibleResults.length);
+                const wrongAnswer = allPossibleResults[randomIndex];
+                allPossibleResults.splice(randomIndex, 1);
+                if (!options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
             }
             
-            // Mélanger les options
+            // Si pas assez d'options, ajouter des couleurs de base
+            if (options.length < numChoices) {
+                const baseColors = levelData.colors.map(c => c.hex);
+                for (let color of baseColors) {
+                    if (options.length >= numChoices) break;
+                    if (!options.includes(color)) options.push(color);
+                }
+            }
+            
             options.sort(() => Math.random() - 0.5);
             
-            // Afficher les options
             const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.style.gridTemplateColumns = 'repeat(3, 1fr)';
             optionsDiv.innerHTML = '';
             options.forEach(option => {
                 const btn = document.createElement('button');
@@ -578,11 +733,9 @@
                 btn.classList.add('wrong-shake', 'border-red-500');
                 btn.style.borderWidth = '8px';
                 
-                // Griser les mauvaises réponses et faire clignoter la bonne
                 let correctButton = null;
                 allButtons.forEach(b => {
                     const btnColor = b.style.backgroundColor;
-                    // Convertir les deux couleurs en format comparable
                     const btnRgb = btnColor.startsWith('#') ? btnColor : rgbStringToHex(btnColor);
                     
                     if (btnRgb.toUpperCase() === correctAnswer.toUpperCase()) {
@@ -617,16 +770,15 @@
             document.getElementById('quizGame').classList.add('hidden');
             document.getElementById('quizEnd').classList.remove('hidden');
             document.getElementById('finalPlayer').textContent = playerName;
+            document.getElementById('finalLevel').textContent = quizLevel;
             document.getElementById('finalScore').textContent = score + ' points';
             document.getElementById('finalPercentage').textContent = `${Math.round(score / totalQuestions)}% de réussite`;
             
-            // Sauvegarder le score
-            scores.push({ name: playerName, score: score, date: new Date().toLocaleDateString() });
+            scores.push({ name: playerName, score: score, level: quizLevel, date: new Date().toLocaleDateString() });
             scores.sort((a, b) => b.score - a.score);
-            scores = scores.slice(0, 50); // Garder les 50 meilleurs
+            scores = scores.slice(0, 50);
             localStorage.setItem('colorQuizScores', JSON.stringify(scores));
             
-            // Mettre à jour ou créer le joueur
             let player = players.find(p => p.name === playerName);
             if (player) {
                 player.gamesPlayed++;
@@ -643,156 +795,4 @@
             localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
             
             updateLeaderboard();
-        }
-
-        function updateLeaderboard() {
-            const leaderboard = document.getElementById('leaderboard');
-            if (scores.length === 0) {
-                leaderboard.innerHTML = '<p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>';
-                return;
-            }
-            
-            // Calculer les meilleures moyennes par joueur
-            const playerStats = {};
-            scores.forEach(s => {
-                if (!playerStats[s.name]) {
-                    playerStats[s.name] = { scores: [], bestScore: 0 };
-                }
-                playerStats[s.name].scores.push(s.score);
-                if (s.score > playerStats[s.name].bestScore) {
-                    playerStats[s.name].bestScore = s.score;
-                }
-            });
-            
-            const playerAverages = Object.keys(playerStats).map(name => {
-                const avg = Math.round(playerStats[name].scores.reduce((a, b) => a + b, 0) / playerStats[name].scores.length);
-                return {
-                    name: name,
-                    average: avg,
-                    bestScore: playerStats[name].bestScore,
-                    gamesPlayed: playerStats[name].scores.length
-                };
-            }).sort((a, b) => b.average - a.average);
-            
-            leaderboard.innerHTML = `
-                <div class="mb-4">
-                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🏆 Classement par Moyenne</h3>
-                    ${playerAverages.slice(0, 10).map((p, i) => `
-                        <div class="flex items-center justify-between bg-gradient-to-r ${i === 0 ? 'from-yellow-100 to-yellow-200' : i === 1 ? 'from-gray-100 to-gray-200' : i === 2 ? 'from-orange-100 to-orange-200' : 'from-purple-50 to-pink-50'} p-4 rounded-xl mb-2">
-                            <div class="flex items-center gap-4">
-                                <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-600' : i === 1 ? 'text-gray-600' : i === 2 ? 'text-orange-600' : 'text-purple-600'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
-                                <div>
-                                    <p class="font-bold text-lg">${p.name}</p>
-                                    <p class="text-sm text-gray-600">${p.gamesPlayed} partie${p.gamesPlayed > 1 ? 's' : ''} • Meilleur: ${p.bestScore} pts</p>
-                                </div>
-                            </div>
-                            <span class="text-2xl font-bold text-green-600">${p.average} pts</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="border-t-2 border-purple-200 pt-4">
-                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">⭐ Top 10 des Meilleurs Scores</h3>
-                    ${scores.slice(0, 10).map((s, i) => `
-                        <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-2">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xl font-bold text-blue-600">#${i + 1}</span>
-                                <div>
-                                    <p class="font-bold">${s.name}</p>
-                                    <p class="text-xs text-gray-600">${s.date}</p>
-                                </div>
-                            </div>
-                            <span class="text-xl font-bold text-green-600">${s.score} pts</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        // Modal
-        function showModal(selector) {
-            activeSelector = selector;
-            document.getElementById('modal').classList.remove('hidden');
-            const gridDiv = document.getElementById('colorGrid');
-            const gridCols = Math.sqrt(gridSize);
-            const cellSize = gridSize === 64 ? '45px' : '30px';
-            gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
-            gridDiv.innerHTML = '';
-            colorGrid.slice(2).forEach(color => {
-                const cell = document.createElement('div');
-                cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
-                cell.style.backgroundColor = color;
-                cell.style.width = cellSize;
-                cell.style.height = cellSize;
-                cell.title = color;
-                cell.onclick = () => selectColor(color);
-                gridDiv.appendChild(cell);
-            });
-            document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-            activeSelector = null;
-        }
-
-        function selectColor(color) {
-            if (activeSelector === 1) {
-                color1 = color;
-                document.getElementById('color1Display').style.backgroundColor = color1;
-                document.getElementById('color1Code').textContent = color1.toUpperCase();
-                document.getElementById('ratioColor1').style.backgroundColor = color1;
-            } else if (activeSelector === 2) {
-                color2 = color;
-                document.getElementById('color2Display').style.backgroundColor = color2;
-                document.getElementById('color2Code').textContent = color2.toUpperCase();
-                document.getElementById('ratioColor2').style.backgroundColor = color2;
-            }
-            closeModal();
-        }
-
-        // Initialisation
-        colorGrid = generateColorGrid(gridSize);
-        updateLeaderboard();
-
-        // Event listeners Mode Pratique
-        document.getElementById('btn64').onclick = () => {
-            gridSize = 64;
-            colorGrid = generateColorGrid(gridSize);
-            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-        };
-
-        document.getElementById('btn256').onclick = () => {
-            gridSize = 256;
-            colorGrid = generateColorGrid(gridSize);
-            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-        };
-
-        document.getElementById('btnColor1').onclick = () => showModal(1);
-        document.getElementById('color1Display').onclick = () => showModal(1);
-        document.getElementById('btnColor2').onclick = () => showModal(2);
-        document.getElementById('color2Display').onclick = () => showModal(2);
-        document.getElementById('btnCloseModal').onclick = closeModal;
-        document.getElementById('btnMix').onclick = mixColors;
-
-        document.getElementById('modal').onclick = (e) => {
-            if (e.target.id === 'modal') closeModal();
-        };
-
-        document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
-        document.querySelector('.color-black').onclick = () => selectColor('#000000');
-
-        document.getElementById('mixRatio').oninput = (e) => {
-            mixRatio = parseInt(e.target.value);
-            updateRatioDisplay();
-            if (result) mixColors();
-        };
-
-        // Enter pour démarrer le quiz
-        document.getElementById('playerName').onkeypress = (e) => {
-            if (e.key === 'Enter') startQuiz();
-        };
-    </script>
-</body>
-</html>
+       
