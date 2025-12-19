@@ -795,4 +795,153 @@
             localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
             
             updateLeaderboard();
-       
+        }
+
+        function updateLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            if (scores.length === 0) {
+                leaderboard.innerHTML = '<p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>';
+                return;
+            }
+            
+            const playerStats = {};
+            scores.forEach(s => {
+                if (!playerStats[s.name]) {
+                    playerStats[s.name] = { scores: [], bestScore: 0 };
+                }
+                playerStats[s.name].scores.push(s.score);
+                if (s.score > playerStats[s.name].bestScore) {
+                    playerStats[s.name].bestScore = s.score;
+                }
+            });
+            
+            const playerAverages = Object.keys(playerStats).map(name => {
+                const avg = Math.round(playerStats[name].scores.reduce((a, b) => a + b, 0) / playerStats[name].scores.length);
+                return {
+                    name: name,
+                    average: avg,
+                    bestScore: playerStats[name].bestScore,
+                    gamesPlayed: playerStats[name].scores.length
+                };
+            }).sort((a, b) => b.average - a.average);
+            
+            leaderboard.innerHTML = `
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🏆 Classement par Moyenne</h3>
+                    ${playerAverages.slice(0, 10).map((p, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r ${i === 0 ? 'from-yellow-100 to-yellow-200' : i === 1 ? 'from-gray-100 to-gray-200' : i === 2 ? 'from-orange-100 to-orange-200' : 'from-purple-50 to-pink-50'} p-4 rounded-xl mb-2">
+                            <div class="flex items-center gap-4">
+                                <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-600' : i === 1 ? 'text-gray-600' : i === 2 ? 'text-orange-600' : 'text-purple-600'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                                <div>
+                                    <p class="font-bold text-lg">${p.name}</p>
+                                    <p class="text-sm text-gray-600">${p.gamesPlayed} partie${p.gamesPlayed > 1 ? 's' : ''} • Meilleur: ${p.bestScore} pts</p>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-green-600">${p.average} pts</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="border-t-2 border-purple-200 pt-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">⭐ Top 10 des Meilleurs Scores</h3>
+                    ${scores.slice(0, 10).map((s, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl font-bold text-blue-600">#${i + 1}</span>
+                                <div>
+                                    <p class="font-bold">${s.name} <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded">Niv.${s.level}</span></p>
+                                    <p class="text-xs text-gray-600">${s.date}</p>
+                                </div>
+                            </div>
+                            <span class="text-xl font-bold text-green-600">${s.score} pts</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Modal
+        function showModal(selector) {
+            activeSelector = selector;
+            document.getElementById('modal').classList.remove('hidden');
+            const gridDiv = document.getElementById('colorGrid');
+            const gridCols = Math.sqrt(gridSize);
+            const cellSize = gridSize === 64 ? '45px' : '30px';
+            gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
+            gridDiv.innerHTML = '';
+            colorGrid.slice(2).forEach(color => {
+                const cell = document.createElement('div');
+                cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
+                cell.style.backgroundColor = color;
+                cell.style.width = cellSize;
+                cell.style.height = cellSize;
+                cell.title = color;
+                cell.onclick = () => selectColor(color);
+                gridDiv.appendChild(cell);
+            });
+            document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            activeSelector = null;
+        }
+
+        function selectColor(color) {
+            if (activeSelector === 1) {
+                color1 = color;
+                document.getElementById('color1Display').style.backgroundColor = color1;
+                document.getElementById('color1Code').textContent = color1.toUpperCase();
+            } else if (activeSelector === 2) {
+                color2 = color;
+                document.getElementById('color2Display').style.backgroundColor = color2;
+                document.getElementById('color2Code').textContent = color2.toUpperCase();
+            }
+            closeModal();
+        }
+
+        // Initialisation
+        colorGrid = generateColorGrid(gridSize);
+        updateLeaderboard();
+        updateRatioDisplay();
+
+        // Event listeners Mode Pratique
+        document.getElementById('btn64').onclick = () => {
+            gridSize = 64;
+            colorGrid = generateColorGrid(gridSize);
+            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
+            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
+        };
+
+        document.getElementById('btn256').onclick = () => {
+            gridSize = 256;
+            colorGrid = generateColorGrid(gridSize);
+            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
+            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
+        };
+
+        document.getElementById('btnColor1').onclick = () => showModal(1);
+        document.getElementById('color1Display').onclick = () => showModal(1);
+        document.getElementById('btnColor2').onclick = () => showModal(2);
+        document.getElementById('color2Display').onclick = () => showModal(2);
+        document.getElementById('btnCloseModal').onclick = closeModal;
+        document.getElementById('btnMix').onclick = mixColors;
+
+        document.getElementById('modal').onclick = (e) => {
+            if (e.target.id === 'modal') closeModal();
+        };
+
+        document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
+        document.querySelector('.color-black').onclick = () => selectColor('#000000');
+
+        document.getElementById('mixRatio').oninput = (e) => {
+            mixRatio = parseInt(e.target.value);
+            updateRatioDisplay();
+            if (result) mixColors();
+        };
+
+        document.getElementById('playerName').onkeypress = (e) => {
+            if (e.key === 'Enter') startQuiz();
+        };
+    </script>
+</body>
+</html>
