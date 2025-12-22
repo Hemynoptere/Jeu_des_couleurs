@@ -1,865 +1,879 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 Mélange de Couleurs Magique!</title>
+    <title>🎮 Quiz des Couleurs !</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: linear-gradient(to right, #d8b4fe, #f9a8d4);
-            border-radius: 0.5rem;
-            height: 0.75rem;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-```
-    input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 1.5rem;
-        height: 1.5rem;
-        background: #a855f7;
-        cursor: pointer;
-        border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    input[type="range"]::-moz-range-thumb {
-        width: 1.5rem;
-        height: 1.5rem;
-        background: #a855f7;
-        cursor: pointer;
-        border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-</style>
-```
-
+        .correct-answer {
+            animation: bounce 0.5s ease-in-out;
+        }
+        .wrong-shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        @keyframes blink {
+            0%, 100% { border-color: #22c55e; box-shadow: 0 0 20px #22c55e; }
+            50% { border-color: #fbbf24; box-shadow: 0 0 40px #fbbf24; }
+        }
+        .blink-answer {
+            animation: blink 0.6s ease-in-out 3;
+            border-width: 8px !important;
+        }
+        .grayed-out {
+            filter: grayscale(100%) brightness(0.7);
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100 p-4">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-4xl font-bold text-center text-purple-800 mb-6">
-            🎨 Mélange de Couleurs Magique! 🎨
+    <!-- Écran d'accueil -->
+    <div id="homeScreen" class="max-w-4xl mx-auto">
+        <h1 class="text-5xl font-bold text-center text-purple-800 mb-8 mt-8">
+            🎮 Quiz des Couleurs ! 🎨
         </h1>
-
-```
-    <div class="bg-white rounded-3xl shadow-2xl p-6 mb-6">
-        <!-- Choix du nombre de couleurs -->
-        <div class="mb-6 text-center">
-            <h3 class="text-lg font-bold text-gray-700 mb-3">Nombre de couleurs dans la grille :</h3>
-            <div class="flex gap-4 justify-center flex-wrap">
-                <button id="btn64" class="px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105">
-                    64 couleurs (8×8)
-                </button>
-                <button id="btn256" class="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300">
-                    256 couleurs (16×16)
-                </button>
-            </div>
-        </div>
-
-        <!-- Couleurs et résultat sur une ligne -->
-        <div class="grid grid-cols-3 gap-6 mb-6">
-            <!-- Couleur 1 -->
-            <div>
-                <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 1</h2>
-                <div id="color1Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FF0000;"></div>
-                <button id="btnColor1" class="w-full py-3 rounded-lg font-semibold transition-all bg-purple-100 text-purple-700 hover:bg-purple-200">
-                    Choisir
-                </button>
-                <p id="color1Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FF0000</p>
-            </div>
-
-            <!-- Résultat -->
-            <div>
-                <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Résultat</h2>
-                <div id="resultDisplay" class="w-full h-48 rounded-xl border-4 border-dashed border-gray-300 mb-3 flex items-center justify-center bg-gray-50">
-                    <span class="text-4xl">❓</span>
-                </div>
-                <button id="btnMix" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-lg font-bold py-3 rounded-lg hover:scale-105 transition-transform shadow-lg">
-                    ✨ Mélanger ✨
-                </button>
-                <p id="resultCode" class="text-center text-sm text-gray-600 mt-2 font-mono"></p>
-            </div>
-
-            <!-- Couleur 2 -->
-            <div>
-                <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 2</h2>
-                <div id="color2Display" class="w-full h-48 rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FFFF00;"></div>
-                <button id="btnColor2" class="w-full py-3 rounded-lg font-semibold transition-all bg-pink-100 text-pink-700 hover:bg-pink-200">
-                    Choisir
-                </button>
-                <p id="color2Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FFFF00</p>
-            </div>
-        </div>
-
-        <!-- Curseur de mélange -->
-        <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-            <h3 class="text-lg font-bold text-gray-700 mb-3 text-center">
-                ⚖️ Proportion du mélange
-            </h3>
-            <div class="flex items-center gap-4">
-                <div class="flex-shrink-0 text-center">
-                    <div id="ratioColor1" class="w-12 h-12 rounded-lg border-2 border-purple-400 mb-1" style="background-color: #FF0000;"></div>
-                    <span id="ratioText1" class="text-sm font-bold text-purple-700">50%</span>
-                </div>
-                
-                <div class="flex-grow">
-                    <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full cursor-pointer">
-                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>Plus de Couleur 1</span>
-                        <span>Équilibré</span>
-                        <span>Plus de Couleur 2</span>
+        
+        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-6">
+            <h2 class="text-3xl font-bold text-center text-gray-700 mb-6">
+                Choisis ton mode de jeu
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-blue-300" onclick="selectMode('practice')">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🎨</div>
+                        <h3 class="text-2xl font-bold text-blue-800 mb-3">Mode Pratique</h3>
+                        <p class="text-gray-700">
+                            Mélange librement les couleurs et découvre les résultats. Parfait pour apprendre !
+                        </p>
                     </div>
                 </div>
                 
-                <div class="flex-shrink-0 text-center">
-                    <div id="ratioColor2" class="w-12 h-12 rounded-lg border-2 border-pink-400 mb-1" style="background-color: #FFFF00;"></div>
-                    <span id="ratioText2" class="text-sm font-bold text-pink-700">50%</span>
+                <div class="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-purple-300" onclick="selectMode('quiz')">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🏆</div>
+                        <h3 class="text-2xl font-bold text-purple-800 mb-3">Mode Quiz</h3>
+                        <p class="text-gray-700">
+                            Devine le résultat du mélange ! Plusieurs niveaux de difficulté.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl p-8">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                🏅 Tableau des Meilleurs Scores
+            </h2>
+            <div id="leaderboard" class="space-y-3">
+                <p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Pratique -->
+    <div id="practiceScreen" class="max-w-6xl mx-auto hidden">
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="goHome()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-full transition-all">
+                ← Retour
+            </button>
+            <h1 class="text-4xl font-bold text-purple-800">🎨 Mode Pratique</h1>
+            <div class="w-32"></div>
+        </div>
+        
+        <div class="bg-white rounded-3xl shadow-2xl p-6 mb-6">
+            <div class="mb-6 text-center">
+                <h3 class="text-lg font-bold text-gray-700 mb-3">Nombre de couleurs :</h3>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <button id="btn64" class="px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105">
+                        64 couleurs (8×8)
+                    </button>
+                    <button id="btn256" class="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        256 couleurs (16×16)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 1</h2>
+                    <div id="color1Display" class="w-full rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FF0000; height: 200px;"></div>
+                    <button id="btnColor1" class="w-full py-3 rounded-lg font-semibold transition-all bg-purple-100 text-purple-700 hover:bg-purple-200">
+                        Choisir
+                    </button>
+                    <p id="color1Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FF0000</p>
+                    <p id="ratioText1" class="text-center text-2xl font-bold text-purple-700 mt-2">50%</p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Résultat</h2>
+                    <div id="resultDisplay" class="w-full h-48 rounded-xl border-4 border-dashed border-gray-300 mb-3 flex items-center justify-center bg-gray-50">
+                        <span class="text-4xl">❓</span>
+                    </div>
+                    <button id="btnMix" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-lg font-bold py-3 rounded-lg hover:scale-105 transition-transform shadow-lg">
+                        ✨ Mélanger ✨
+                    </button>
+                    <p id="resultCode" class="text-center text-sm text-gray-600 mt-2 font-mono"></p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-700 mb-3 text-center">Couleur 2</h2>
+                    <div id="color2Display" class="w-full rounded-xl border-4 border-gray-300 mb-3 transition-all duration-300 hover:scale-105 cursor-pointer" style="background-color: #FFFF00; height: 200px;"></div>
+                    <button id="btnColor2" class="w-full py-3 rounded-lg font-semibold transition-all bg-pink-100 text-pink-700 hover:bg-pink-200">
+                        Choisir
+                    </button>
+                    <p id="color2Code" class="text-center text-sm text-gray-600 mt-2 font-mono">#FFFF00</p>
+                    <p id="ratioText2" class="text-center text-2xl font-bold text-pink-700 mt-2">50%</p>
+                </div>
+            </div>
+
+            <!-- Curseur de proportion -->
+            <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                <h3 class="text-lg font-bold text-gray-700 mb-4 text-center">⚖️ Proportion du mélange</h3>
+                <input type="range" id="mixRatio" min="0" max="100" value="50" class="w-full h-3 bg-gradient-to-r from-purple-300 to-pink-300 rounded-lg appearance-none cursor-pointer mb-2">
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>← Plus de Couleur 1</span>
+                    <span>Équilibré 50/50</span>
+                    <span>Plus de Couleur 2 →</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-8 bg-white rounded-xl p-6 shadow-lg">
-        <h3 class="text-lg font-bold text-gray-700 mb-2">💡 Comment jouer :</h3>
-        <p class="text-gray-600">
-            1. Choisis le nombre de couleurs (64 ou 256) - Le blanc et le noir sont toujours disponibles !<br>
-            2. Clique sur "Choisir" sous Couleur 1 pour voir la grille<br>
-            3. Sélectionne une couleur et la grille disparaîtra<br>
-            4. Fais la même chose pour Couleur 2<br>
-            5. Utilise le curseur pour ajuster la proportion de chaque couleur<br>
-            6. Clique sur "Mélanger" pour voir le résultat !
-        </p>
-    </div>
-</div>
+    <!-- Mode Quiz -->
+    <div id="quizScreen" class="max-w-4xl mx-auto hidden">
+        <!-- Sélection du niveau -->
+        <div id="levelSelection" class="bg-white rounded-3xl shadow-2xl p-8 mt-12">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                🎯 Choisis ton niveau
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-green-300" onclick="selectLevel(1)">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">⭐</div>
+                        <h3 class="text-2xl font-bold text-green-800 mb-3">Niveau 1 - Débutant</h3>
+                        <p class="text-gray-700 mb-3">
+                            Couleurs primaires + Noir et Blanc
+                        </p>
+                        <div class="flex justify-center gap-2">
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF0000;" title="Rouge"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FFFF00;" title="Jaune"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #0000FF;" title="Bleu"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #000000;" title="Noir"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #FFFFFF;" title="Blanc"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3">3 choix de réponse</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform border-4 border-orange-300" onclick="selectLevel(2)">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">⭐⭐</div>
+                        <h3 class="text-2xl font-bold text-orange-800 mb-3">Niveau 2 - Intermédiaire</h3>
+                        <p class="text-gray-700 mb-3">
+                            Primaires + Secondaires + N&B
+                        </p>
+                        <div class="flex justify-center gap-2 flex-wrap">
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FFFF00;" title="Jaune"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF8000;" title="Orange"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #FF0000;" title="Rouge"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #8000FF;" title="Violet"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #0000FF;" title="Bleu"></div>
+                            <div class="w-8 h-8 rounded-full" style="background-color: #00FF00;" title="Vert"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #000000;" title="Noir"></div>
+                            <div class="w-8 h-8 rounded-full border-2 border-gray-400" style="background-color: #FFFFFF;" title="Blanc"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-3">6 choix de réponse</p>
+                    </div>
+                </div>
+            </div>
+            <button onclick="goHome()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
+                ← Retour
+            </button>
+        </div>
 
-<!-- Fenêtre modale pour la grille de couleurs -->
-<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
-    <div class="bg-white rounded-3xl p-6 max-w-3xl max-h-[90vh] overflow-auto shadow-2xl">
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="modalTitle" class="text-2xl font-bold text-gray-700">
-                🎯 Choisis une couleur
-            </h3>
-            <button id="btnCloseModal" class="text-3xl text-gray-500 hover:text-gray-700 font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
-                ×
-            </button>
-        </div>
-        
-        <!-- Blanc et Noir en grands boutons -->
-        <div class="flex gap-4 justify-center mb-6">
-            <button class="color-white w-32 h-32 rounded-xl border-4 border-gray-300 hover:scale-110 transition-transform shadow-lg hover:shadow-xl" style="background-color: #FFFFFF;" title="Blanc">
-                <span class="text-2xl font-bold text-gray-400">Blanc</span>
-            </button>
-            <button class="color-black w-32 h-32 rounded-xl border-4 border-gray-300 hover:scale-110 transition-transform shadow-lg hover:shadow-xl flex items-center justify-center" style="background-color: #000000;" title="Noir">
-                <span class="text-2xl font-bold text-white">Noir</span>
-            </button>
-        </div>
-        
-        <div class="border-t-2 border-gray-200 pt-4">
-            <div class="flex justify-center">
-                <div id="colorGrid" class="grid gap-2"></div>
+        <!-- Inscription -->
+        <div id="playerRegistration" class="bg-white rounded-3xl shadow-2xl p-8 mt-12 hidden">
+            <h2 class="text-3xl font-bold text-center text-purple-800 mb-6">
+                👤 Qui joue ?
+            </h2>
+            
+            <div id="existingPlayers" class="mb-6"></div>
+            
+            <div class="max-w-md mx-auto">
+                <p class="text-center text-gray-600 mb-3">Ou crée un nouveau joueur :</p>
+                <input type="text" id="playerName" placeholder="Entre ton prénom..." class="w-full px-6 py-4 text-xl border-4 border-purple-300 rounded-xl mb-4 focus:outline-none focus:border-purple-500">
+                <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-2xl font-bold py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                    Commencer ! 🚀
+                </button>
+                <button onclick="backToLevelSelection()" class="w-full mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all">
+                    ← Changer de niveau
+                </button>
             </div>
         </div>
-        
-        <p id="colorCount" class="text-center text-sm text-gray-500 mt-4"></p>
+
+        <!-- Jeu Quiz -->
+        <div id="quizGame" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="backToPlayerSelection()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-full transition-all text-sm">
+                    ← Changer de joueur
+                </button>
+                <div class="flex gap-4">
+                    <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                        <p class="text-gray-600 text-sm">Joueur</p>
+                        <p id="currentPlayer" class="text-2xl font-bold text-purple-800"></p>
+                    </div>
+                    <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                        <p class="text-gray-600 text-sm">Niveau</p>
+                        <p id="currentLevel" class="text-2xl font-bold text-orange-600">1</p>
+                    </div>
+                    <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                        <p class="text-gray-600 text-sm">Score</p>
+                        <p id="currentScore" class="text-2xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+                        <p class="text-gray-600 text-sm">Question</p>
+                        <p id="questionNumber" class="text-2xl font-bold text-blue-600">1/10</p>
+                    </div>
+                </div>
+                <div class="w-32"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">
+                    Quel est le résultat de ce mélange ?
+                </h2>
+
+                <div class="flex justify-center items-center gap-6 mb-8">
+                    <div class="text-center">
+                        <div id="quizColor1" class="w-32 h-32 rounded-2xl border-4 border-gray-300 shadow-lg mb-2"></div>
+                        <p class="text-sm text-gray-600">Couleur 1</p>
+                    </div>
+                    <div class="text-6xl text-purple-600">+</div>
+                    <div class="text-center">
+                        <div id="quizColor2" class="w-32 h-32 rounded-2xl border-4 border-gray-300 shadow-lg mb-2"></div>
+                        <p class="text-sm text-gray-600">Couleur 2</p>
+                    </div>
+                    <div class="text-6xl text-purple-600">=</div>
+                    <div class="text-6xl">❓</div>
+                </div>
+
+                <div id="quizOptions" class="grid gap-4 mb-6"></div>
+                <div id="feedback" class="hidden text-center text-2xl font-bold py-4 rounded-xl mb-4"></div>
+            </div>
+        </div>
+
+        <!-- Écran de fin -->
+        <div id="quizEnd" class="bg-white rounded-3xl shadow-2xl p-8 mt-12 hidden">
+            <h2 class="text-4xl font-bold text-center text-purple-800 mb-6">
+                🎉 Partie terminée !
+            </h2>
+            <div class="text-center mb-8">
+                <p class="text-2xl text-gray-700 mb-2">Score final de <span id="finalPlayer" class="font-bold text-purple-600"></span></p>
+                <p class="text-lg text-gray-600 mb-4">Niveau <span id="finalLevel"></span></p>
+                <p id="finalScore" class="text-6xl font-bold text-green-600 mb-4"></p>
+                <p id="finalPercentage" class="text-xl text-gray-600"></p>
+            </div>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <button onclick="restartSameLevel()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-8 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                    Rejouer ce niveau 🔄
+                </button>
+                <button onclick="backToPlayerSelection()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl transition-all">
+                    Changer de joueur 👤
+                </button>
+                <button onclick="goHome()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 px-8 rounded-xl transition-all">
+                    Accueil 🏠
+                </button>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    let color1 = '#FF0000';
-    let color2 = '#FFFF00';
-    let result = null;
-    let gridSize = 64;
-    let activeSelector = null;
-    let mixRatio = 50;
-    let colorGrid = [];
+    <!-- Modal grille couleurs -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-3xl max-h-[90vh] overflow-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-2xl font-bold text-gray-700">🎯 Choisis une couleur</h3>
+                <button id="btnCloseModal" class="text-3xl text-gray-500 hover:text-gray-700 font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">×</button>
+            </div>
+            <div class="flex gap-4 justify-center mb-6">
+                <button class="color-white w-32 h-32 rounded-xl border-4 border-gray-300 hover:scale-110 transition-transform shadow-lg hover:shadow-xl" style="background-color: #FFFFFF;" title="Blanc">
+                    <span class="text-2xl font-bold text-gray-400">Blanc</span>
+                </button>
+                <button class="color-black w-32 h-32 rounded-xl border-4 border-gray-300 hover:scale-110 transition-transform shadow-lg hover:shadow-xl flex items-center justify-center" style="background-color: #000000;" title="Noir">
+                    <span class="text-2xl font-bold text-white">Noir</span>
+                </button>
+            </div>
+            <div class="border-t-2 border-gray-200 pt-4">
+                <div class="flex justify-center">
+                    <div id="colorGrid" class="grid gap-2"></div>
+                </div>
+            </div>
+            <p id="colorCount" class="text-center text-sm text-gray-500 mt-4"></p>
+        </div>
+    </div>
 
-    function generateColorGrid(size) {
-        const colors = ['#FFFFFF', '#000000'];
-        const steps = Math.sqrt(size - 2);
+    <script>
+        // Variables globales
+        let currentMode = 'home';
+        let color1 = '#FF0000';
+        let color2 = '#FFFF00';
+        let result = null;
+        let gridSize = 64;
+        let activeSelector = null;
+        let mixRatio = 50;
+        let colorGrid = [];
         
-        for (let i = 0; i < steps; i++) {
-            for (let j = 0; j < steps; j++) {
-                const hue = (i / steps) * 360;
-                const saturation = 100;
-                const lightness = 20 + (j / steps) * 60;
-                
-                const h = hue / 360;
-                const s = saturation / 100;
-                const l = lightness / 100;
-                
-                let r, g, b;
-                if (s === 0) {
-                    r = g = b = l;
-                } else {
-                    const hue2rgb = (p, q, t) => {
-                        if (t < 0) t += 1;
-                        if (t > 1) t -= 1;
-                        if (t < 1/6) return p + (q - p) * 6 * t;
-                        if (t < 1/2) return q;
-                        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                        return p;
+        // Variables Quiz
+        let playerName = '';
+        let score = 0;
+        let currentQuestion = 1;
+        let totalQuestions = 10;
+        let correctAnswer = '';
+        let quizLevel = 1;
+        let scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
+        let players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
+
+        // Couleurs du cercle chromatique
+        const CHROMATIC_COLORS = {
+            level1: {
+                name: 'Primaires + N&B',
+                colors: [
+                    { hex: '#FF0000', name: 'Rouge' },
+                    { hex: '#FFFF00', name: 'Jaune' },
+                    { hex: '#0000FF', name: 'Bleu' },
+                    { hex: '#000000', name: 'Noir' },
+                    { hex: '#FFFFFF', name: 'Blanc' }
+                ],
+                numChoices: 3,
+                // Table des mélanges corrects
+                mixTable: [
+                    { c1: '#FF0000', c2: '#FFFF00', result: '#FF8000' }, // Rouge + Jaune = Orange
+                    { c1: '#FFFF00', c2: '#0000FF', result: '#00FF00' }, // Jaune + Bleu = Vert
+                    { c1: '#0000FF', c2: '#FF0000', result: '#8000FF' }, // Bleu + Rouge = Violet
+                    { c1: '#FF0000', c2: '#000000', result: '#800000' }, // Rouge + Noir = Rouge foncé
+                    { c1: '#FFFF00', c2: '#000000', result: '#808000' }, // Jaune + Noir = Vert olive
+                    { c1: '#0000FF', c2: '#000000', result: '#000080' }, // Bleu + Noir = Bleu marine
+                    { c1: '#FF0000', c2: '#FFFFFF', result: '#FF8080' }, // Rouge + Blanc = Rose
+                    { c1: '#FFFF00', c2: '#FFFFFF', result: '#FFFF80' }, // Jaune + Blanc = Jaune clair
+                    { c1: '#0000FF', c2: '#FFFFFF', result: '#8080FF' }, // Bleu + Blanc = Bleu clair
+                    { c1: '#000000', c2: '#FFFFFF', result: '#808080' }  // Noir + Blanc = Gris
+                ]
+            },
+            level2: {
+                name: 'Primaires + Secondaires + N&B',
+                colors: [
+                    { hex: '#FFFF00', name: 'Jaune' },
+                    { hex: '#FF8000', name: 'Orange' },
+                    { hex: '#FF0000', name: 'Rouge' },
+                    { hex: '#8000FF', name: 'Violet' },
+                    { hex: '#0000FF', name: 'Bleu' },
+                    { hex: '#00FF00', name: 'Vert' },
+                    { hex: '#000000', name: 'Noir' },
+                    { hex: '#FFFFFF', name: 'Blanc' }
+                ],
+                numChoices: 6,
+                mixTable: [
+                    // Primaires
+                    { c1: '#FF0000', c2: '#FFFF00', result: '#FF8000' }, // Rouge + Jaune = Orange
+                    { c1: '#FFFF00', c2: '#0000FF', result: '#00FF00' }, // Jaune + Bleu = Vert
+                    { c1: '#0000FF', c2: '#FF0000', result: '#8000FF' }, // Bleu + Rouge = Violet
+                    // Secondaires entre elles
+                    { c1: '#FF8000', c2: '#00FF00', result: '#80C000' }, // Orange + Vert = Jaune-vert
+                    { c1: '#00FF00', c2: '#8000FF', result: '#4080FF' }, // Vert + Violet = Bleu-vert
+                    { c1: '#8000FF', c2: '#FF8000', result: '#C04000' }, // Violet + Orange = Rouge-orangé
+                    // Avec noir
+                    { c1: '#FF0000', c2: '#000000', result: '#800000' }, // Rouge + Noir
+                    { c1: '#FFFF00', c2: '#000000', result: '#808000' }, // Jaune + Noir
+                    { c1: '#0000FF', c2: '#000000', result: '#000080' }, // Bleu + Noir
+                    { c1: '#FF8000', c2: '#000000', result: '#804000' }, // Orange + Noir
+                    { c1: '#00FF00', c2: '#000000', result: '#008000' }, // Vert + Noir
+                    { c1: '#8000FF', c2: '#000000', result: '#400080' }, // Violet + Noir
+                    // Avec blanc
+                    { c1: '#FF0000', c2: '#FFFFFF', result: '#FF8080' }, // Rouge + Blanc
+                    { c1: '#FFFF00', c2: '#FFFFFF', result: '#FFFF80' }, // Jaune + Blanc
+                    { c1: '#0000FF', c2: '#FFFFFF', result: '#8080FF' }, // Bleu + Blanc
+                    { c1: '#FF8000', c2: '#FFFFFF', result: '#FFC080' }, // Orange + Blanc
+                    { c1: '#00FF00', c2: '#FFFFFF', result: '#80FF80' }, // Vert + Blanc
+                    { c1: '#8000FF', c2: '#FFFFFF', result: '#C080FF' }, // Violet + Blanc
+                    { c1: '#000000', c2: '#FFFFFF', result: '#808080' }  // Noir + Blanc = Gris
+                ]
+            }
+        };
+
+        // Fonctions de génération de couleurs
+        function generateColorGrid(size) {
+            const colors = ['#FFFFFF', '#000000'];
+            const steps = Math.sqrt(size - 2);
+            
+            for (let i = 0; i < steps; i++) {
+                for (let j = 0; j < steps; j++) {
+                    const hue = (i / steps) * 360;
+                    const saturation = 100;
+                    const lightness = 20 + (j / steps) * 60;
+                    
+                    const h = hue / 360;
+                    const s = saturation / 100;
+                    const l = lightness / 100;
+                    
+                    let r, g, b;
+                    if (s === 0) {
+                        r = g = b = l;
+                    } else {
+                        const hue2rgb = (p, q, t) => {
+                            if (t < 0) t += 1;
+                            if (t > 1) t -= 1;
+                            if (t < 1/6) return p + (q - p) * 6 * t;
+                            if (t < 1/2) return q;
+                            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                            return p;
+                        };
+                        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                        const p = 2 * l - q;
+                        r = hue2rgb(p, q, h + 1/3);
+                        g = hue2rgb(p, q, h);
+                        b = hue2rgb(p, q, h - 1/3);
+                    }
+                    
+                    const toHex = x => {
+                        const hex = Math.round(x * 255).toString(16);
+                        return hex.length === 1 ? '0' + hex : hex;
                     };
-                    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                    const p = 2 * l - q;
-                    r = hue2rgb(p, q, h + 1/3);
-                    g = hue2rgb(p, q, h);
-                    b = hue2rgb(p, q, h - 1/3);
+                    
+                    colors.push(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
                 }
-                
-                const toHex = x => {
-                    const hex = Math.round(x * 255).toString(16);
-                    return hex.length === 1 ? '0' + hex : hex;
-                };
-                
-                colors.push(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
+            }
+            return colors;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function rgbToCmy(r, g, b) {
+            return { c: 1 - r / 255, m: 1 - g / 255, y: 1 - b / 255 };
+        }
+
+        function cmyToRgb(c, m, y) {
+            return {
+                r: Math.round((1 - c) * 255),
+                g: Math.round((1 - m) * 255),
+                b: Math.round((1 - y) * 255)
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        function mixTwoColors(c1, c2, ratio = 50) {
+            const rgb1 = hexToRgb(c1);
+            const rgb2 = hexToRgb(c2);
+            const cmy1 = rgbToCmy(rgb1.r, rgb1.g, rgb1.b);
+            const cmy2 = rgbToCmy(rgb2.r, rgb2.g, rgb2.b);
+            const weight1 = ratio / 100;
+            const weight2 = 1 - weight1;
+            const mixedCmy = {
+                c: cmy1.c * weight2 + cmy2.c * weight1,
+                m: cmy1.m * weight2 + cmy2.m * weight1,
+                y: cmy1.y * weight2 + cmy2.y * weight1
+            };
+            const mixedRgb = cmyToRgb(mixedCmy.c, mixedCmy.m, mixedCmy.y);
+            return rgbToHex(mixedRgb.r, mixedRgb.g, mixedRgb.b);
+        }
+
+        // Navigation
+        function selectMode(mode) {
+            currentMode = mode;
+            document.getElementById('homeScreen').classList.add('hidden');
+            if (mode === 'practice') {
+                document.getElementById('practiceScreen').classList.remove('hidden');
+            } else if (mode === 'quiz') {
+                document.getElementById('quizScreen').classList.remove('hidden');
+                document.getElementById('levelSelection').classList.remove('hidden');
             }
         }
-        return colors;
-    }
 
-    function hexToRgb(hex) {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
+        function selectLevel(level) {
+            quizLevel = level;
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('playerRegistration').classList.remove('hidden');
+            displayExistingPlayers();
+        }
 
-    function rgbToCmy(r, g, b) {
-        return {
-            c: 1 - r / 255,
-            m: 1 - g / 255,
-            y: 1 - b / 255
-        };
-    }
-
-    function cmyToRgb(c, m, y) {
-        return {
-            r: Math.round((1 - c) * 255),
-            g: Math.round((1 - m) * 255),
-            b: Math.round((1 - y) * 255)
-        };
-    }
-
-    function rgbToHex(r, g, b) {
-        return '#' + [r, g, b].map(x => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        }).join('');
-    }
-
-    function mixTwoColors(c1, c2, ratio = 50) {
-        const rgb1 = hexToRgb(c1);
-        const rgb2 = hexToRgb(c2);
-        const cmy1 = rgbToCmy(rgb1.r, rgb1.g, rgb1.b);
-        const cmy2 = rgbToCmy(rgb2.r, rgb2.g, rgb2.b);
-        const weight1 = ratio / 100;
-        const weight2 = 1 - weight1;
-        const mixedCmy = {
-            c: cmy1.c * weight2 + cmy2.c * weight1,
-            m: cmy1.m * weight2 + cmy2.m * weight1,
-            y: cmy1.y * weight2 + cmy2.y * weight1
-        };
-        const mixedRgb = cmyToRgb(mixedCmy.c, mixedCmy.m, mixedCmy.y);
-        return rgbToHex(mixedRgb.r, mixedRgb.g, mixedRgb.b);
-    }
-
-    // Navigation
-    function selectMode(mode) {
-        currentMode = mode;
-        document.getElementById('homeScreen').classList.add('hidden');
-        if (mode === 'practice') {
-            document.getElementById('practiceScreen').classList.remove('hidden');
-        } else if (mode === 'quiz') {
-            document.getElementById('quizScreen').classList.remove('hidden');
+        function backToLevelSelection() {
+            document.getElementById('playerRegistration').classList.add('hidden');
             document.getElementById('levelSelection').classList.remove('hidden');
         }
-    }
 
-    function selectLevel(level) {
-        quizLevel = level;
-        document.getElementById('levelSelection').classList.add('hidden');
-        document.getElementById('playerRegistration').classList.remove('hidden');
-        displayExistingPlayers();
-    }
-
-    function backToLevelSelection() {
-        document.getElementById('playerRegistration').classList.add('hidden');
-        document.getElementById('levelSelection').classList.remove('hidden');
-    }
-
-    function goHome() {
-        document.getElementById('homeScreen').classList.remove('hidden');
-        document.getElementById('practiceScreen').classList.add('hidden');
-        document.getElementById('quizScreen').classList.add('hidden');
-        document.getElementById('levelSelection').classList.add('hidden');
-        document.getElementById('playerRegistration').classList.add('hidden');
-        document.getElementById('quizGame').classList.add('hidden');
-        document.getElementById('quizEnd').classList.add('hidden');
-        updateLeaderboard();
-    }
-    
-    function backToPlayerSelection() {
-        if (currentQuestion > 1 && currentQuestion <= totalQuestions) {
-            if (!confirm('Abandonner la partie en cours ?')) return;
-        }
-        document.getElementById('quizGame').classList.add('hidden');
-        document.getElementById('quizEnd').classList.add('hidden');
-        document.getElementById('playerRegistration').classList.remove('hidden');
-        document.getElementById('playerName').value = '';
-        displayExistingPlayers();
-    }
-
-    function restartSameLevel() {
-        score = 0;
-        currentQuestion = 1;
-        document.getElementById('quizEnd').classList.add('hidden');
-        document.getElementById('quizGame').classList.remove('hidden');
-        generateQuestion();
-    }
-
-    // Mode Pratique
-    function mixColors() {
-        result = mixTwoColors(color1, color2, mixRatio);
-        document.getElementById('resultDisplay').style.backgroundColor = result;
-        document.getElementById('resultDisplay').classList.remove('border-dashed');
-        document.getElementById('resultDisplay').classList.add('border-purple-300');
-        document.getElementById('resultDisplay').innerHTML = '';
-        document.getElementById('resultCode').textContent = result.toUpperCase();
-    }
-
-    function updateRatioDisplay() {
-        const ratio1 = 100 - mixRatio;
-        const ratio2 = mixRatio;
-        
-        document.getElementById('ratioText1').textContent = ratio1 + '%';
-        document.getElementById('ratioText2').textContent = ratio2 + '%';
-        
-        // Ajuster la hauteur des carrés de couleur proportionnellement
-        const minHeight = 20;
-        const maxHeight = 300;
-        const height1 = ratio1 === 0 ? 0 : minHeight + ((ratio1 / 100) * (maxHeight - minHeight));
-        const height2 = ratio2 === 0 ? 0 : minHeight + ((ratio2 / 100) * (maxHeight - minHeight));
-        
-        document.getElementById('color1Display').style.height = height1 + 'px';
-        document.getElementById('color2Display').style.height = height2 + 'px';
-        
-        // Masquer complètement à 0%
-        document.getElementById('color1Display').style.opacity = ratio1 === 0 ? '0' : '1';
-        document.getElementById('color2Display').style.opacity = ratio2 === 0 ? '0' : '1';
-    }
-
-    // Mode Quiz - Gestion des joueurs
-    function displayExistingPlayers() {
-        const container = document.getElementById('existingPlayers');
-        if (players.length === 0) {
-            container.innerHTML = '';
-            return;
+        function goHome() {
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('practiceScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('playerRegistration').classList.add('hidden');
+            document.getElementById('quizGame').classList.add('hidden');
+            document.getElementById('quizEnd').classList.add('hidden');
+            updateLeaderboard();
         }
         
-        container.innerHTML = '<p class="text-center text-gray-600 mb-3">Choisis un joueur existant :</p><div class="grid grid-cols-1 gap-3 max-w-md mx-auto mb-4" id="playersGrid"></div>';
-        
-        const grid = document.getElementById('playersGrid');
-        players.forEach(player => {
-            const row = document.createElement('div');
-            row.className = 'flex gap-2';
-            
-            const card = document.createElement('div');
-            card.className = 'flex-grow bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 hover:scale-105 transition-transform cursor-pointer border-2 border-purple-300';
-            card.onclick = () => selectPlayer(player.name);
-            
-            card.innerHTML = `
-                <p class="font-bold text-lg text-purple-800 mb-1">${player.name}</p>
-                <p class="text-sm text-gray-600">${player.gamesPlayed} partie${player.gamesPlayed > 1 ? 's' : ''}</p>
-                <p class="text-sm font-semibold text-green-600">Moy: ${player.averageScore} pts</p>
-            `;
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 font-bold text-xl transition-all';
-            deleteBtn.textContent = '🗑️';
-            deleteBtn.title = 'Supprimer ' + player.name;
-            deleteBtn.onclick = () => deletePlayer(player.name);
-            
-            row.appendChild(card);
-            row.appendChild(deleteBtn);
-            grid.appendChild(row);
-        });
-    }
-    
-    function selectPlayer(name) {
-        document.getElementById('playerName').value = name;
-        startQuiz();
-    }
-    
-    function deletePlayer(name) {
-        if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
-        
-        players = players.filter(p => p.name !== name);
-        localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
-        
-        scores = scores.filter(s => s.name !== name);
-        localStorage.setItem('colorQuizScores', JSON.stringify(scores));
-        
-        players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
-        scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
-        
-        displayExistingPlayers();
-        updateLeaderboard();
-    }
-    
-    function startQuiz() {
-        playerName = document.getElementById('playerName').value.trim();
-        if (!playerName) {
-            alert('Entre ton prénom pour jouer !');
-            return;
-        }
-        score = 0;
-        currentQuestion = 1;
-        document.getElementById('playerRegistration').classList.add('hidden');
-        document.getElementById('quizGame').classList.remove('hidden');
-        document.getElementById('currentPlayer').textContent = playerName;
-        document.getElementById('currentLevel').textContent = quizLevel;
-        generateQuestion();
-    }
-
-    function generateQuestion() {
-        document.getElementById('feedback').classList.add('hidden');
-        document.getElementById('currentScore').textContent = score;
-        document.getElementById('questionNumber').textContent = `${currentQuestion}/${totalQuestions}`;
-        
-        const levelData = CHROMATIC_COLORS[`level${quizLevel}`];
-        const numChoices = levelData.numChoices;
-        
-        // Choisir un mélange aléatoire depuis la table
-        const mixTable = levelData.mixTable;
-        const selectedMix = mixTable[Math.floor(Math.random() * mixTable.length)];
-        
-        const c1 = selectedMix.c1;
-        const c2 = selectedMix.c2;
-        correctAnswer = selectedMix.result;
-        
-        document.getElementById('quizColor1').style.backgroundColor = c1;
-        document.getElementById('quizColor2').style.backgroundColor = c2;
-        
-        // Générer les mauvaises options depuis d'autres mélanges
-        const options = [correctAnswer];
-        const allPossibleResults = mixTable.map(m => m.result).filter(r => r !== correctAnswer);
-        
-        while (options.length < numChoices && allPossibleResults.length > 0) {
-            const randomIndex = Math.floor(Math.random() * allPossibleResults.length);
-            const wrongAnswer = allPossibleResults[randomIndex];
-            allPossibleResults.splice(randomIndex, 1);
-            if (!options.includes(wrongAnswer)) {
-                options.push(wrongAnswer);
+        function backToPlayerSelection() {
+            if (currentQuestion > 1 && currentQuestion <= totalQuestions) {
+                if (!confirm('Abandonner la partie en cours ?')) return;
             }
+            document.getElementById('quizGame').classList.add('hidden');
+            document.getElementById('quizEnd').classList.add('hidden');
+            document.getElementById('playerRegistration').classList.remove('hidden');
+            document.getElementById('playerName').value = '';
+            displayExistingPlayers();
         }
-        
-        // Si pas assez d'options, ajouter des couleurs de base
-        if (options.length < numChoices) {
-            const baseColors = levelData.colors.map(c => c.hex);
-            for (let color of baseColors) {
-                if (options.length >= numChoices) break;
-                if (!options.includes(color)) options.push(color);
-            }
-        }
-        
-        options.sort(() => Math.random() - 0.5);
-        
-        const optionsDiv = document.getElementById('quizOptions');
-        optionsDiv.style.gridTemplateColumns = 'repeat(3, 1fr)';
-        optionsDiv.innerHTML = '';
-        options.forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = 'h-32 rounded-2xl border-4 border-gray-300 hover:scale-105 transition-transform shadow-lg cursor-pointer';
-            btn.style.backgroundColor = option;
-            btn.onclick = () => checkAnswer(option, btn);
-            optionsDiv.appendChild(btn);
-        });
-    }
 
-    function checkAnswer(selected, btn) {
-        const feedback = document.getElementById('feedback');
-        const allButtons = document.getElementById('quizOptions').querySelectorAll('button');
-        allButtons.forEach(b => b.onclick = null);
-        
-        if (selected === correctAnswer) {
-            score += 10;
-            feedback.textContent = '✅ Bravo ! +10 points';
-            feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-green-100 text-green-700';
-            btn.classList.add('correct-answer', 'border-green-500');
-            btn.style.borderWidth = '8px';
+        function restartSameLevel() {
+            score = 0;
+            currentQuestion = 1;
+            document.getElementById('quizEnd').classList.add('hidden');
+            document.getElementById('quizGame').classList.remove('hidden');
+            generateQuestion();
+        }
+
+        // Mode Pratique
+        function mixColors() {
+            result = mixTwoColors(color1, color2, mixRatio);
+            document.getElementById('resultDisplay').style.backgroundColor = result;
+            document.getElementById('resultDisplay').classList.remove('border-dashed');
+            document.getElementById('resultDisplay').classList.add('border-purple-300');
+            document.getElementById('resultDisplay').innerHTML = '';
+            document.getElementById('resultCode').textContent = result.toUpperCase();
+        }
+
+        function updateRatioDisplay() {
+            const ratio1 = 100 - mixRatio;
+            const ratio2 = mixRatio;
             
-            setTimeout(() => {
-                currentQuestion++;
-                if (currentQuestion <= totalQuestions) {
-                    generateQuestion();
-                } else {
-                    endQuiz();
-                }
-            }, 2000);
-        } else {
-            feedback.textContent = '❌ Raté ! Regarde la bonne réponse qui clignote :';
-            feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-red-100 text-red-700';
-            btn.classList.add('wrong-shake', 'border-red-500');
-            btn.style.borderWidth = '8px';
+            document.getElementById('ratioText1').textContent = ratio1 + '%';
+            document.getElementById('ratioText2').textContent = ratio2 + '%';
             
-            let correctButton = null;
-            allButtons.forEach(b => {
-                const btnColor = b.style.backgroundColor;
-                const btnRgb = btnColor.startsWith('#') ? btnColor : rgbStringToHex(btnColor);
+            // Ajuster la hauteur des carrés de couleur proportionnellement
+            const minHeight = 20;
+            const maxHeight = 300;
+            const height1 = ratio1 === 0 ? 0 : minHeight + ((ratio1 / 100) * (maxHeight - minHeight));
+            const height2 = ratio2 === 0 ? 0 : minHeight + ((ratio2 / 100) * (maxHeight - minHeight));
+            
+            document.getElementById('color1Display').style.height = height1 + 'px';
+            document.getElementById('color2Display').style.height = height2 + 'px';
+            
+            // Masquer complètement à 0%
+            document.getElementById('color1Display').style.opacity = ratio1 === 0 ? '0' : '1';
+            document.getElementById('color2Display').style.opacity = ratio2 === 0 ? '0' : '1';
+        }
+
+        // Mode Quiz - Gestion des joueurs
+        function displayExistingPlayers() {
+            const container = document.getElementById('existingPlayers');
+            if (players.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = '<p class="text-center text-gray-600 mb-3">Choisis un joueur existant :</p><div class="grid grid-cols-1 gap-3 max-w-md mx-auto mb-4" id="playersGrid"></div>';
+            
+            const grid = document.getElementById('playersGrid');
+            players.forEach(player => {
+                const row = document.createElement('div');
+                row.className = 'flex gap-2';
                 
-                if (btnRgb.toUpperCase() === correctAnswer.toUpperCase()) {
-                    correctButton = b;
-                    b.classList.add('blink-answer');
-                    b.style.borderColor = '#22c55e';
-                    b.style.borderWidth = '8px';
-                } else {
-                    b.classList.add('grayed-out');
+                const card = document.createElement('div');
+                card.className = 'flex-grow bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 hover:scale-105 transition-transform cursor-pointer border-2 border-purple-300';
+                card.onclick = () => selectPlayer(player.name);
+                
+                card.innerHTML = `
+                    <p class="font-bold text-lg text-purple-800 mb-1">${player.name}</p>
+                    <p class="text-sm text-gray-600">${player.gamesPlayed} partie${player.gamesPlayed > 1 ? 's' : ''}</p>
+                    <p class="text-sm font-semibold text-green-600">Moy: ${player.averageScore} pts</p>
+                `;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 font-bold text-xl transition-all';
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.title = 'Supprimer ' + player.name;
+                deleteBtn.onclick = () => deletePlayer(player.name);
+                
+                row.appendChild(card);
+                row.appendChild(deleteBtn);
+                grid.appendChild(row);
+            });
+        }
+        
+        function selectPlayer(name) {
+            document.getElementById('playerName').value = name;
+            startQuiz();
+        }
+        
+        function deletePlayer(name) {
+            if (!confirm(`Supprimer ${name} et tous ses scores ?`)) return;
+            
+            players = players.filter(p => p.name !== name);
+            localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
+            
+            scores = scores.filter(s => s.name !== name);
+            localStorage.setItem('colorQuizScores', JSON.stringify(scores));
+            
+            players = JSON.parse(localStorage.getItem('colorQuizPlayers') || '[]');
+            scores = JSON.parse(localStorage.getItem('colorQuizScores') || '[]');
+            
+            displayExistingPlayers();
+            updateLeaderboard();
+        }
+        
+        function startQuiz() {
+            playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('Entre ton prénom pour jouer !');
+                return;
+            }
+            score = 0;
+            currentQuestion = 1;
+            document.getElementById('playerRegistration').classList.add('hidden');
+            document.getElementById('quizGame').classList.remove('hidden');
+            document.getElementById('currentPlayer').textContent = playerName;
+            document.getElementById('currentLevel').textContent = quizLevel;
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('currentScore').textContent = score;
+            document.getElementById('questionNumber').textContent = `${currentQuestion}/${totalQuestions}`;
+            
+            const levelData = CHROMATIC_COLORS[`level${quizLevel}`];
+            const numChoices = levelData.numChoices;
+            
+            // Choisir un mélange aléatoire depuis la table
+            const mixTable = levelData.mixTable;
+            const selectedMix = mixTable[Math.floor(Math.random() * mixTable.length)];
+            
+            const c1 = selectedMix.c1;
+            const c2 = selectedMix.c2;
+            correctAnswer = selectedMix.result;
+            
+            document.getElementById('quizColor1').style.backgroundColor = c1;
+            document.getElementById('quizColor2').style.backgroundColor = c2;
+            
+            // Générer les mauvaises options depuis d'autres mélanges
+            const options = [correctAnswer];
+            const allPossibleResults = mixTable.map(m => m.result).filter(r => r !== correctAnswer);
+            
+            while (options.length < numChoices && allPossibleResults.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allPossibleResults.length);
+                const wrongAnswer = allPossibleResults[randomIndex];
+                allPossibleResults.splice(randomIndex, 1);
+                if (!options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Si pas assez d'options, ajouter des couleurs de base
+            if (options.length < numChoices) {
+                const baseColors = levelData.colors.map(c => c.hex);
+                for (let color of baseColors) {
+                    if (options.length >= numChoices) break;
+                    if (!options.includes(color)) options.push(color);
+                }
+            }
+            
+            options.sort(() => Math.random() - 0.5);
+            
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            optionsDiv.innerHTML = '';
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'h-32 rounded-2xl border-4 border-gray-300 hover:scale-105 transition-transform shadow-lg cursor-pointer';
+                btn.style.backgroundColor = option;
+                btn.onclick = () => checkAnswer(option, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, btn) {
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.getElementById('quizOptions').querySelectorAll('button');
+            allButtons.forEach(b => b.onclick = null);
+            
+            if (selected === correctAnswer) {
+                score += 10;
+                feedback.textContent = '✅ Bravo ! +10 points';
+                feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-green-100 text-green-700';
+                btn.classList.add('correct-answer', 'border-green-500');
+                btn.style.borderWidth = '8px';
+                
+                setTimeout(() => {
+                    currentQuestion++;
+                    if (currentQuestion <= totalQuestions) {
+                        generateQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }, 2000);
+            } else {
+                feedback.textContent = '❌ Raté ! Regarde la bonne réponse qui clignote :';
+                feedback.className = 'text-center text-2xl font-bold py-4 rounded-xl mb-4 bg-red-100 text-red-700';
+                btn.classList.add('wrong-shake', 'border-red-500');
+                btn.style.borderWidth = '8px';
+                
+                let correctButton = null;
+                allButtons.forEach(b => {
+                    const btnColor = b.style.backgroundColor;
+                    const btnRgb = btnColor.startsWith('#') ? btnColor : rgbStringToHex(btnColor);
+                    
+                    if (btnRgb.toUpperCase() === correctAnswer.toUpperCase()) {
+                        correctButton = b;
+                        b.classList.add('blink-answer');
+                        b.style.borderColor = '#22c55e';
+                        b.style.borderWidth = '8px';
+                    } else {
+                        b.classList.add('grayed-out');
+                    }
+                });
+                
+                setTimeout(() => {
+                    currentQuestion++;
+                    if (currentQuestion <= totalQuestions) {
+                        generateQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }, 3500);
+            }
+            feedback.classList.remove('hidden');
+        }
+        
+        function rgbStringToHex(rgb) {
+            const result = rgb.match(/\d+/g);
+            if (!result) return rgb;
+            return rgbToHex(parseInt(result[0]), parseInt(result[1]), parseInt(result[2]));
+        }
+
+        function endQuiz() {
+            document.getElementById('quizGame').classList.add('hidden');
+            document.getElementById('quizEnd').classList.remove('hidden');
+            document.getElementById('finalPlayer').textContent = playerName;
+            document.getElementById('finalLevel').textContent = quizLevel;
+            document.getElementById('finalScore').textContent = score + ' points';
+            document.getElementById('finalPercentage').textContent = `${Math.round(score / totalQuestions)}% de réussite`;
+            
+            scores.push({ name: playerName, score: score, level: quizLevel, date: new Date().toLocaleDateString() });
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 50);
+            localStorage.setItem('colorQuizScores', JSON.stringify(scores));
+            
+            let player = players.find(p => p.name === playerName);
+            if (player) {
+                player.gamesPlayed++;
+                player.totalScore += score;
+                player.averageScore = Math.round(player.totalScore / player.gamesPlayed);
+            } else {
+                players.push({
+                    name: playerName,
+                    gamesPlayed: 1,
+                    totalScore: score,
+                    averageScore: score
+                });
+            }
+            localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
+            
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            if (scores.length === 0) {
+                leaderboard.innerHTML = '<p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>';
+                return;
+            }
+            
+            const playerStats = {};
+            scores.forEach(s => {
+                if (!playerStats[s.name]) {
+                    playerStats[s.name] = { scores: [], bestScore: 0 };
+                }
+                playerStats[s.name].scores.push(s.score);
+                if (s.score > playerStats[s.name].bestScore) {
+                    playerStats[s.name].bestScore = s.score;
                 }
             });
             
-            setTimeout(() => {
-                currentQuestion++;
-                if (currentQuestion <= totalQuestions) {
-                    generateQuestion();
-                } else {
-                    endQuiz();
-                }
-            }, 3500);
-        }
-        feedback.classList.remove('hidden');
-    }
-    
-    function rgbStringToHex(rgb) {
-        const result = rgb.match(/\d+/g);
-        if (!result) return rgb;
-        return rgbToHex(parseInt(result[0]), parseInt(result[1]), parseInt(result[2]));
-    }
-
-    function endQuiz() {
-        document.getElementById('quizGame').classList.add('hidden');
-        document.getElementById('quizEnd').classList.remove('hidden');
-        document.getElementById('finalPlayer').textContent = playerName;
-        document.getElementById('finalLevel').textContent = quizLevel;
-        document.getElementById('finalScore').textContent = score + ' points';
-        document.getElementById('finalPercentage').textContent = `${Math.round(score / totalQuestions)}% de réussite`;
-        
-        scores.push({ name: playerName, score: score, level: quizLevel, date: new Date().toLocaleDateString() });
-        scores.sort((a, b) => b.score - a.score);
-        scores = scores.slice(0, 50);
-        localStorage.setItem('colorQuizScores', JSON.stringify(scores));
-        
-        let player = players.find(p => p.name === playerName);
-        if (player) {
-            player.gamesPlayed++;
-            player.totalScore += score;
-            player.averageScore = Math.round(player.totalScore / player.gamesPlayed);
-        } else {
-            players.push({
-                name: playerName,
-                gamesPlayed: 1,
-                totalScore: score,
-                averageScore: score
-            });
-        }
-        localStorage.setItem('colorQuizPlayers', JSON.stringify(players));
-        
-        updateLeaderboard();
-    }
-
-    function updateLeaderboard() {
-        const leaderboard = document.getElementById('leaderboard');
-        if (scores.length === 0) {
-            leaderboard.innerHTML = '<p class="text-center text-gray-500">Aucun score enregistré pour le moment</p>';
-            return;
-        }
-        
-        const playerStats = {};
-        scores.forEach(s => {
-            if (!playerStats[s.name]) {
-                playerStats[s.name] = { scores: [], bestScore: 0 };
-            }
-            playerStats[s.name].scores.push(s.score);
-            if (s.score > playerStats[s.name].bestScore) {
-                playerStats[s.name].bestScore = s.score;
-            }
-        });
-        
-        const playerAverages = Object.keys(playerStats).map(name => {
-            const avg = Math.round(playerStats[name].scores.reduce((a, b) => a + b, 0) / playerStats[name].scores.length);
-            return {
-                name: name,
-                average: avg,
-                bestScore: playerStats[name].bestScore,
-                gamesPlayed: playerStats[name].scores.length
-            };
-        }).sort((a, b) => b.average - a.average);
-        
-        leaderboard.innerHTML = `
-            <div class="mb-4">
-                <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🏆 Classement par Moyenne</h3>
-                ${playerAverages.slice(0, 10).map((p, i) => `
-                    <div class="flex items-center justify-between bg-gradient-to-r ${i === 0 ? 'from-yellow-100 to-yellow-200' : i === 1 ? 'from-gray-100 to-gray-200' : i === 2 ? 'from-orange-100 to-orange-200' : 'from-purple-50 to-pink-50'} p-4 rounded-xl mb-2">
-                        <div class="flex items-center gap-4">
-                            <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-600' : i === 1 ? 'text-gray-600' : i === 2 ? 'text-orange-600' : 'text-purple-600'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
-                            <div>
-                                <p class="font-bold text-lg">${p.name}</p>
-                                <p class="text-sm text-gray-600">${p.gamesPlayed} partie${p.gamesPlayed > 1 ? 's' : ''} • Meilleur: ${p.bestScore} pts</p>
+            const playerAverages = Object.keys(playerStats).map(name => {
+                const avg = Math.round(playerStats[name].scores.reduce((a, b) => a + b, 0) / playerStats[name].scores.length);
+                return {
+                    name: name,
+                    average: avg,
+                    bestScore: playerStats[name].bestScore,
+                    gamesPlayed: playerStats[name].scores.length
+                };
+            }).sort((a, b) => b.average - a.average);
+            
+            leaderboard.innerHTML = `
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🏆 Classement par Moyenne</h3>
+                    ${playerAverages.slice(0, 10).map((p, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r ${i === 0 ? 'from-yellow-100 to-yellow-200' : i === 1 ? 'from-gray-100 to-gray-200' : i === 2 ? 'from-orange-100 to-orange-200' : 'from-purple-50 to-pink-50'} p-4 rounded-xl mb-2">
+                            <div class="flex items-center gap-4">
+                                <span class="text-3xl font-bold ${i === 0 ? 'text-yellow-600' : i === 1 ? 'text-gray-600' : i === 2 ? 'text-orange-600' : 'text-purple-600'}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                                <div>
+                                    <p class="font-bold text-lg">${p.name}</p>
+                                    <p class="text-sm text-gray-600">${p.gamesPlayed} partie${p.gamesPlayed > 1 ? 's' : ''} • Meilleur: ${p.bestScore} pts</p>
+                                </div>
                             </div>
+                            <span class="text-2xl font-bold text-green-600">${p.average} pts</span>
                         </div>
-                        <span class="text-2xl font-bold text-green-600">${p.average} pts</span>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="border-t-2 border-purple-200 pt-4">
-                <h3 class="text-xl font-bold text-center text-purple-700 mb-3">⭐ Top 10 des Meilleurs Scores</h3>
-                ${scores.slice(0, 10).map((s, i) => `
-                    <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl font-bold text-blue-600">#${i + 1}</span>
-                            <div>
-                                <p class="font-bold">${s.name} <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded">Niv.${s.level}</span></p>
-                                <p class="text-xs text-gray-600">${s.date}</p>
+                    `).join('')}
+                </div>
+                <div class="border-t-2 border-purple-200 pt-4">
+                    <h3 class="text-xl font-bold text-center text-purple-700 mb-3">⭐ Top 10 des Meilleurs Scores</h3>
+                    ${scores.slice(0, 10).map((s, i) => `
+                        <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-xl mb-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl font-bold text-blue-600">#${i + 1}</span>
+                                <div>
+                                    <p class="font-bold">${s.name} <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded">Niv.${s.level}</span></p>
+                                    <p class="text-xs text-gray-600">${s.date}</p>
+                                </div>
                             </div>
+                            <span class="text-xl font-bold text-green-600">${s.score} pts</span>
                         </div>
-                        <span class="text-xl font-bold text-green-600">${s.score} pts</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    // Modal
-    function showModal(selector) {
-        activeSelector = selector;
-        document.getElementById('modal').classList.remove('hidden');
-        const gridDiv = document.getElementById('colorGrid');
-        const gridCols = Math.sqrt(gridSize);
-        const cellSize = gridSize === 64 ? '45px' : '30px';
-        gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
-        gridDiv.innerHTML = '';
-        colorGrid.slice(2).forEach(color => {
-            const cell = document.createElement('div');
-            cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
-            cell.style.backgroundColor = color;
-            cell.style.width = cellSize;
-            cell.style.height = cellSize;
-            cell.title = color;
-            cell.onclick = () => selectColor(color);
-            gridDiv.appendChild(cell);
-        });
-        document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
-    }
-
-    function closeModal() {
-        document.getElementById('modal').classList.add('hidden');
-        activeSelector = null;
-    }
-
-    function selectColor(color) {
-        if (activeSelector === 1) {
-            color1 = color;
-            document.getElementById('color1Display').style.backgroundColor = color1;
-            document.getElementById('color1Code').textContent = color1.toUpperCase();
-        } else if (activeSelector === 2) {
-            color2 = color;
-            document.getElementById('color2Display').style.backgroundColor = color2;
-            document.getElementById('color2Code').textContent = color2.toUpperCase();
-        }
-        closeModal();
-    }
-
-    // Initialisation
-    colorGrid = generateColorGrid(gridSize);
-    updateLeaderboard();
-    updateRatioDisplay();
-
-    // Event listeners Mode Pratique
-    document.getElementById('btn64').onclick = () => {
-        gridSize = 64;
-        colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btn256').onclick = () => {
-        gridSize = 256;
-        colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btnColor1').onclick = () => showModal(1);
-    document.getElementById('color1Display').onclick = () => showModal(1);
-    document.getElementById('btnColor2').onclick = () => showModal(2);
-    document.getElementById('color2Display').onclick = () => showModal(2);
-    document.getElementById('btnCloseModal').onclick = closeModal;
-    document.getElementById('btnMix').onclick = mixColors;
-
-    document.getElementById('modal').onclick = (e) => {
-        if (e.target.id === 'modal') closeModal();
-    };
-
-    document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
-    document.querySelector('.color-black').onclick = () => selectColor('#000000');
-
-    document.getElementById('mixRatio').oninput = (e) => {
-        mixRatio = parseInt(e.target.value);
-        updateRatioDisplay();
-        if (result) mixColors();
-    };
-
-    document.getElementById('playerName').onkeypress = (e) => {
-        if (e.key === 'Enter') startQuiz();
-    };
-</script>
-```
-
-</body>
-</html>.round((1 - y) * 255)
-            };
+                    `).join('')}
+                </div>
+            `;
         }
 
-```
-    function rgbToHex(r, g, b) {
-        return '#' + [r, g, b].map(x => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        }).join('');
-    }
-
-    function mixColors() {
-        const rgb1 = hexToRgb(color1);
-        const rgb2 = hexToRgb(color2);
-        
-        const cmy1 = rgbToCmy(rgb1.r, rgb1.g, rgb1.b);
-        const cmy2 = rgbToCmy(rgb2.r, rgb2.g, rgb2.b);
-        
-        const weight1 = mixRatio / 100;
-        const weight2 = 1 - weight1;
-        
-        const mixedCmy = {
-            c: cmy1.c * weight2 + cmy2.c * weight1,
-            m: cmy1.m * weight2 + cmy2.m * weight1,
-            y: cmy1.y * weight2 + cmy2.y * weight1
-        };
-        
-        const mixedRgb = cmyToRgb(mixedCmy.c, mixedCmy.m, mixedCmy.y);
-        result = rgbToHex(mixedRgb.r, mixedRgb.g, mixedRgb.b);
-        
-        document.getElementById('resultDisplay').style.backgroundColor = result;
-        document.getElementById('resultDisplay').classList.remove('border-dashed');
-        document.getElementById('resultDisplay').classList.add('border-purple-300', 'animate-pulse');
-        document.getElementById('resultDisplay').innerHTML = '';
-        document.getElementById('resultCode').textContent = result.toUpperCase();
-    }
-
-    function updateRatioDisplay() {
-        document.getElementById('ratioText1').textContent = (100 - mixRatio) + '%';
-        document.getElementById('ratioText2').textContent = mixRatio + '%';
-    }
-
-    function showModal(selector) {
-        activeSelector = selector;
-        document.getElementById('modal').classList.remove('hidden');
-        document.getElementById('modalTitle').textContent = 
-            `🎯 Choisis une couleur pour ${selector === 1 ? 'Couleur 1' : 'Couleur 2'}`;
-        
-        const gridDiv = document.getElementById('colorGrid');
-        const gridCols = Math.sqrt(gridSize);
-        const cellSize = gridSize === 64 ? '45px' : '30px';
-        
-        gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
-        gridDiv.innerHTML = '';
-        
-        colorGrid.slice(2).forEach(color => {
-            const cell = document.createElement('div');
-            cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
-            cell.style.backgroundColor = color;
-            cell.style.width = cellSize;
-            cell.style.height = cellSize;
-            cell.title = color;
-            cell.onclick = () => selectColor(color);
-            gridDiv.appendChild(cell);
-        });
-        document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
-    }
-
-    function closeModal() {
-        document.getElementById('modal').classList.add('hidden');
-        activeSelector = null;
-    }
-
-    function selectColor(color) {
-        if (activeSelector === 1) {
-            color1 = color;
-            document.getElementById('color1Display').style.backgroundColor = color1;
-            document.getElementById('color1Code').textContent = color1.toUpperCase();
-            document.getElementById('ratioColor1').style.backgroundColor = color1;
-        } else if (activeSelector === 2) {
-            color2 = color;
-            document.getElementById('color2Display').style.backgroundColor = color2;
-            document.getElementById('color2Code').textContent = color2.toUpperCase();
-            document.getElementById('ratioColor2').style.backgroundColor = color2;
-        }
-        closeModal();
-    }
-
-    // Initialisation
-    colorGrid = generateColorGrid(gridSize);
-    updateLeaderboard();
-
-    // Event listeners Mode Pratique
-    document.getElementById('btn64').onclick = () => {
-        gridSize = 64;
-        colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btn256').onclick = () => {
-        gridSize = 256;
-        colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btnColor1').onclick = () => showModal(1);
-    document.getElementById('color1Display').onclick = () => showModal(1);
-    document.getElementById('btnColor2').onclick = () => showModal(2);
-    document.getElementById('color2Display').onclick = () => showModal(2);
-    document.getElementById('btnCloseModal').onclick = closeModal;
-    document.getElementById('btnMix').onclick = mixColors;
-
-    document.getElementById('modal').onclick = (e) => {
-        if (e.target.id === 'modal') closeModal();
-    };
-
-    document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
-    document.querySelector('.color-black').onclick = () => selectColor('#000000');
-
-    document.getElementById('mixRatio').oninput = (e) => {
-        mixRatio = parseInt(e.target.value);
-        updateRatioDisplay();
-        if (result) mixColors();
-    };
-
-    // Enter pour démarrer le quiz
-    document.getElementById('playerName').onkeypress = (e) => {
-        if (e.key === 'Enter') startQuiz();
-    };
-</script>
-```
-
-</body>
-</html> cell = document.createElement('div');
+        // Modal
+        function showModal(selector) {
+            activeSelector = selector;
+            document.getElementById('modal').classList.remove('hidden');
+            const gridDiv = document.getElementById('colorGrid');
+            const gridCols = Math.sqrt(gridSize);
+            const cellSize = gridSize === 64 ? '45px' : '30px';
+            gridDiv.style.gridTemplateColumns = `repeat(${gridCols}, ${cellSize})`;
+            gridDiv.innerHTML = '';
+            colorGrid.slice(2).forEach(color => {
+                const cell = document.createElement('div');
                 cell.className = 'rounded-lg cursor-pointer hover:scale-110 transition-transform border-2 border-white shadow-md hover:shadow-xl';
                 cell.style.backgroundColor = color;
                 cell.style.width = cellSize;
@@ -868,71 +882,70 @@
                 cell.onclick = () => selectColor(color);
                 gridDiv.appendChild(cell);
             });
-
-```
-        document.getElementById('colorCount').textContent = 
-            `${colorGrid.length} couleurs disponibles - Clique sur une couleur pour la sélectionner`;
-    }
-
-    function closeModal() {
-        document.getElementById('modal').classList.add('hidden');
-        activeSelector = null;
-    }
-
-    function selectColor(color) {
-        if (activeSelector === 1) {
-            color1 = color;
-            document.getElementById('color1Display').style.backgroundColor = color1;
-            document.getElementById('color1Code').textContent = color1.toUpperCase();
-            document.getElementById('ratioColor1').style.backgroundColor = color1;
-        } else if (activeSelector === 2) {
-            color2 = color;
-            document.getElementById('color2Display').style.backgroundColor = color2;
-            document.getElementById('color2Code').textContent = color2.toUpperCase();
-            document.getElementById('ratioColor2').style.backgroundColor = color2;
+            document.getElementById('colorCount').textContent = `${colorGrid.length} couleurs disponibles`;
         }
-        closeModal();
-    }
 
-    // Initialisation
-    colorGrid = generateColorGrid(gridSize);
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            activeSelector = null;
+        }
 
-    // Event listeners
-    document.getElementById('btn64').onclick = () => {
-        gridSize = 64;
+        function selectColor(color) {
+            if (activeSelector === 1) {
+                color1 = color;
+                document.getElementById('color1Display').style.backgroundColor = color1;
+                document.getElementById('color1Code').textContent = color1.toUpperCase();
+            } else if (activeSelector === 2) {
+                color2 = color;
+                document.getElementById('color2Display').style.backgroundColor = color2;
+                document.getElementById('color2Code').textContent = color2.toUpperCase();
+            }
+            closeModal();
+        }
+
+        // Initialisation
         colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btn256').onclick = () => {
-        gridSize = 256;
-        colorGrid = generateColorGrid(gridSize);
-        document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
-        document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
-    };
-
-    document.getElementById('btnColor1').onclick = () => showModal(1);
-    document.getElementById('color1Display').onclick = () => showModal(1);
-    document.getElementById('btnColor2').onclick = () => showModal(2);
-    document.getElementById('color2Display').onclick = () => showModal(2);
-    document.getElementById('btnCloseModal').onclick = closeModal;
-    document.getElementById('btnMix').onclick = mixColors;
-
-    document.getElementById('modal').onclick = (e) => {
-        if (e.target.id === 'modal') closeModal();
-    };
-
-    document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
-    document.querySelector('.color-black').onclick = () => selectColor('#000000');
-
-    document.getElementById('mixRatio').oninput = (e) => {
-        mixRatio = parseInt(e.target.value);
+        updateLeaderboard();
         updateRatioDisplay();
-        if (result) mixColors();
-    };
-</script>
-```
 
+        // Event listeners Mode Pratique
+        document.getElementById('btn64').onclick = () => {
+            gridSize = 64;
+            colorGrid = generateColorGrid(gridSize);
+            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
+            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
+        };
+
+        document.getElementById('btn256').onclick = () => {
+            gridSize = 256;
+            colorGrid = generateColorGrid(gridSize);
+            document.getElementById('btn256').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-purple-600 text-white scale-105';
+            document.getElementById('btn64').className = 'px-6 py-3 rounded-lg font-semibold transition-all bg-gray-200 text-gray-700 hover:bg-gray-300';
+        };
+
+        document.getElementById('btnColor1').onclick = () => showModal(1);
+        document.getElementById('color1Display').onclick = () => showModal(1);
+        document.getElementById('btnColor2').onclick = () => showModal(2);
+        document.getElementById('color2Display').onclick = () => showModal(2);
+        document.getElementById('btnCloseModal').onclick = closeModal;
+        document.getElementById('btnMix').onclick = mixColors;
+
+        document.getElementById('modal').onclick = (e) => {
+            if (e.target.id === 'modal') closeModal();
+        };
+
+        document.querySelector('.color-white').onclick = () => selectColor('#FFFFFF');
+        document.querySelector('.color-black').onclick = () => selectColor('#000000');
+
+        document.getElementById('mixRatio').oninput = (e) => {
+            mixRatio = parseInt(e.target.value);
+            updateRatioDisplay();
+            if (result) mixColors();
+        };
+
+        document.getElementById('playerName').onkeypress = (e) => {
+            if (e.key === 'Enter') startQuiz();
+        };
+    </script>
 </body>
 </html>
